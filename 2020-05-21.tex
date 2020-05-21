@@ -1,0 +1,77 @@
+\documentclass[11pt]{article}
+\usepackage[utf8]{inputenc}
+\usepackage{amsmath, amsthm, amssymb, amsfonts, mathtools, tikz-cd, float}
+\usepackage[left=2.5cm,right=2.5cm]{geometry}
+\usepackage[shortlabels]{enumitem}
+
+\newcommand{\Int}{\text{Int}}
+\newcommand{\R}{\mathbb{R}}
+\newcommand{\Z}{\mathbb{Z}}
+\newcommand{\pd}{\partial}
+\renewcommand{\epsilon}{\varepsilon}
+\renewcommand{\hat}{\widehat}
+\renewcommand{\tilde}{\widetilde}
+
+\newtheorem{theorem}{Theorem}[section]
+\newtheorem{corollary}{Corollary}[theorem]
+\newtheorem{lemma}[theorem]{Lemma}
+\newtheorem{proposition}{Proposition}
+
+\newtheorem{definition}{Definition}
+
+\pagestyle{myheadings}
+
+
+\begin{document}
+
+\section{Sufficient Condition for an Interior Local Minimizer (May 21)}
+
+\subsection{A Sufficient Condition}
+\begin{lemma} 
+If $A$ is symmetric and positive-definite, then  there is an $a > 0$ such that $v^T A v \geq a \|v\|^2$ for all $v$.
+\end{lemma}
+\begin{proof}
+There is an orthogonal matrix $Q$ with $Q^T A Q = \mathrm{diag}(\lambda_1, \dots, \lambda_n)$. If $v = Qw$,
+\begin{align*}
+v^T A v &= (Qw)^T A Qw \\
+&= w^T (Q^T A Q) w \\
+&= \lambda_1 w_1^2 + \cdots + \lambda_n w_n^2 \\
+&\geq \min\{\lambda_1, \dots, \lambda_n\} \|w\|^2 \\
+&= \min\{\lambda_1, \dots, \lambda_n\} \|v\|^2 \qquad \text{since $Q$ is orthogonal}
+\end{align*}
+Since $A$ is positive-definite, every eigenvalue is positive and we are done.
+\end{proof}
+
+\begin{theorem}
+(Second order sufficient conditions for interior local minimizers) Let $f$ be $C^2$ on $\Omega \subseteq \R^n$, and let $x_0$ be an interior point of $\Omega$ such that $\nabla f(x_0) = 0$ and $\nabla^2 f(x_0) \succ 0$. Then $x_0$ is a strict local minimizer of $f$.
+\end{theorem}
+\begin{proof}
+The condition $\nabla^2 f(x_0) \succ 0$ implies there is an $a > 0$ such that $v^T \nabla^2 f(x_0) v \geq a \cdot \|v\|^2$ for all $v$. By Taylor's theorem we have
+\[
+f(x_0 + v) - f(x_0) = \frac{1}{2} v^T \nabla^2 f(x_0) v + o(\|v\|^2) \geq \frac{1}{2} a\|v\|^2 + o(\|v\|^2) = \|v\|^2 \left( \frac{a}{2} + \frac{o(\|v\|^2)}{\|v\|^2} \right).
+\]
+For sufficiently small $v$ the right hand side is positive, so $f(x_0 + v) > f(x_0)$ for all such $v$. Therefore $x_0$ is a strict local minimizer of $f$ on $\Omega$.
+\end{proof}
+
+\subsection{Examples}
+\begin{enumerate}[(i)]
+\item 
+Consider $f(x,y) = xy$. The gradient is $\nabla f(x,y) = (y,x)$ and the Hessian is 
+\[
+\nabla^2 f(x,y) = \begin{pmatrix}
+0 & 1 \\ 1 & 0
+\end{pmatrix}.
+\]
+Suppose we want to minimize $f$ on all of $\Omega = \R^2$. By the FONC, the only candidate for a local minimizer is $(0,0)$. The Hessian's eigenvalues are $\pm 1$, so it is not positive definite. We conclude by the SONC that the origin is not a local minimizer of $f$.
+
+\item 
+Consider the same function $f(x,y) = xy$ on $\Omega = \{(x,y) \in \R^2, x, y \geq 0\}$. We claim that every point of the boundary of $\Omega$ is a local minimizer of $f$.
+
+Consider $(x,0)$ with $x > 0$. The feasible directions here are $v$ with $v_2 \geq 0$. The FONC tells us that $\nabla f(x,0) \cdot v\geq 0$. This dot product is $xv_2 \geq 0$, so $(x,0)$ satisfies the FONC. Therefore every point on the positive x-axis is a candidate for a local minimizer. As for the SONC, $\nabla f(x,0) \cdot v = xv_2 = 0$ if and only if $v_2 = 0$. Then $v^T \nabla^2 f(x,0) v = 0$. Of course, this tells us nothing; we need a sufficient condition that works for boundary points. That's for next lecture.
+
+Or, you could just say that $f = 0$ on the boundary of $\Omega$ and is positive on the interior, so every point of the boundary of $\Omega$ is a local minimizer (not strict) of $f$.
+
+\end{enumerate}
+ 
+\end{document}
+ 
