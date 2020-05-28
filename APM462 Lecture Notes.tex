@@ -1,0 +1,452 @@
+\documentclass[11pt]{article}
+\usepackage[utf8]{inputenc}
+\usepackage{amsmath, amsthm, amssymb, amsfonts, mathtools, tikz-cd, float}
+\usepackage[hidelinks]{hyperref}
+\usepackage[left=2.5cm,right=2.5cm]{geometry}
+\usepackage[shortlabels]{enumitem}
+
+\hypersetup{linktoc=all}
+
+\newcommand{\Int}{\text{Int}}
+\newcommand{\R}{\mathbb{R}}
+\newcommand{\Z}{\mathbb{Z}}
+\newcommand{\pd}{\partial}
+\renewcommand{\epsilon}{\varepsilon}
+
+% HOW TO READ THESE
+% (definiton/theory/corollary/lemma) a.b.c is the cth respective object of section a, subsection b
+
+\newtheorem{definition}{Definition}[subsection]
+\newtheorem{theorem}{Theorem}[subsection]
+\newtheorem{corollary}{Corollary}[subsection]
+\newtheorem{lemma}{Lemma}[subsection]
+
+\pagestyle{myheadings}
+\title{APM462 Course Notes}
+\author{Kain Dineen}
+
+\begin{document}
+\maketitle
+
+The following are lecture notes for APM462 (Nonlinear Optimization) offered in the Summer of 2020, taught by Jonathan Korman. These lecture notes were typed during lectures, and are not based off of any handwritten notes. These notes were created three weeks in to the course, and do not (as of now) include the material from the first two weeks.
+
+\tableofcontents
+
+\newpage
+\section{Unconstrained Finite-Dimensional Optimization (May 19)}
+
+\subsection{First Order Necessary Condition}
+
+Our main problem is
+\begin{align*}
+&\min_{x \in \Omega} f(x) \qquad f : \R^n \supseteq \Omega \to \R,
+\end{align*}
+where $\Omega$ is one of the following three types:
+\begin{itemize}
+\item $\Omega = \R^n$.
+\item $\Omega$ open.
+\item $\Omega$ the closure of an open set.
+\end{itemize}
+We can consider minimization problems without any loss of generality, since any maximization problem can be converted to a minimization problem by taking the negative of the function in question: that is,
+\[
+\max_{x \in \Omega} f(x) = \min_{x \in \Omega} -f(x).
+\]
+\begin{definition}
+Given $\Omega \subseteq \R^n$ and a point $x_0 \in \Omega$, we say that the vector $v \in \R^n$ is a feasible direction at $x_0$ if there is an $\overline{s} > 0$ such that $x_0 + sv \in \Omega$ for all $s \in [0, \overline{s}]$.
+\end{definition}
+\begin{theorem}
+(First order necessary condition for a local minimum, or FONC) Let $f : \R^n \supseteq \Omega \to \R$ be $C^1$. If $x_0 \in \Omega$ is a local minimizer of $f$, then $\nabla f(x_0) \cdot v \geq 0$ for all feasible directions $v$ at $x_0$.
+\end{theorem}
+First we deduce a familiar case of the theorem - the one we know from second-year calculus.
+\begin{corollary}
+If $f : \R^n \supseteq \Omega \to \R$ is $C^1$ and $x_0$ is a local minimizer of $f$ in the interior of $\Omega$, then $\nabla f(x_0) = 0$.
+\end{corollary}
+\begin{proof}
+If $x_0$ is an interior point of $\Omega$, then all directions at $x_0$ are feasible. In particular, for any such $v$, we have $\nabla f(x_0) \cdot (v) \geq 0$ and $\nabla f(x_0) \cdot (-v) \geq 0$, which implies $\nabla f(x_0) = 0$ as all directions are feasible at $x_0$.
+\end{proof}
+Now we prove the theorem.
+\begin{proof}
+Reduce to a single-variable problem by defining $g(s) = f(x_0 + sv)$, where $s \geq 0$. Then $0$ is a local minimizer of $g$. Taylor's theorem gives us
+\[
+g(s) - g(0) = s g'(0) + o(s) = s \nabla f(x_0) \cdot v + o(s).
+\]
+If $\nabla f(x_0) \cdot v < 0$, then for sufficiently small $s$ the right side is negative. This implies that $g(s) < g(0)$ for those $s$, a contradiction. Therefore $\nabla f(x_0) \cdot v \geq 0$.
+\end{proof}
+
+\subsection{Examples of using the FONC}
+\begin{enumerate}
+\item 
+Consider the problem
+\begin{align*}
+\min_{x \in \Omega} f(x,y) = x^2 - xy + y^2 - 3y \qquad \text{over } \Omega = \R^2.
+\end{align*}
+By the corollary to the FONC, we want to find the points $(x_0, y_0)$ where $\nabla f(x_0, y_0) = 0$. We have
+\begin{align*}
+\nabla f(x,y) = (2x-y, -x+2y-3),
+\end{align*}
+so we want to solve 
+\begin{align*}
+2x - y &= 0 \\
+-x + 2y &= 3,
+\end{align*}
+which has solution $(x_0, y_0) = (1,2)$. Therefore $(1,2)$ is the only \emph{candidate} for a local minimizer. That is, if the function $f$ has a local minimizer in $\R^2$, then it must be $(1,2)$.
+
+It turns out that $(1,2)$ is a global minimizer for $f$ on $\Omega = \R^2$. By some work, we have
+\[
+f(x,y) = \left(x - \frac{y}{2}\right)^2 + \frac{3}{4}(y-2)^2 - 3.
+\]
+In this form, it is obvious that a \emph{global} minimizer occurs at the point where the squared terms are zero, if such a point exists. That point is $(1,2)$.
+
+\item
+Consider the problem
+\begin{align*}
+\min_{x \in \Omega} f(x,y) = x^2 - x + y + xy \qquad \text{over } \Omega = \{(x,y) \in \R^2 : x,y \geq 0\}.
+\end{align*}
+We have
+\[
+\nabla f(x,y) = (2x + y - 1, x + 1).
+\]
+To apply the FONC, we'll divide the feasible set $\Omega$ into four different regions. Suppose that $(x_0, y_0)$ is a local minimizer of $f$ on $\Omega$.
+\begin{enumerate}[(i)]
+\item $(x_0, y_0)$ is an interior point: 
+
+By the corollary to the FONC, we must have $\nabla f(x_0, y_0) = 0$. Then $x_0 = -1$, which is not in the interior of $\Omega$. This case fails.
+
+\item $(x_0, y_0)$ on the positive x-axis: 
+
+Then we are considering $(x_0, 0)$. The feasible directions at $(x_0, 0)$ are those vectors $v \in \R^2$ with $v_2 \geq 0$. The FONC tells us that $\nabla f(x_0,0) \cdot v \geq 0$ for all feasible directions $v$. We then have
+\[
+(2x_0 - 1)v_1 + (x_0 + 1)v_2 \geq 0
+\]
+for all $v_1$ and all $v_2 \geq 0$. In particular, this holds for $v_2 = 0$, so $(2x_0 - 1)v_1 \geq 0$ for all $v_1$, implying $x_0 = 1/2$. Therefore $(1/2, 0)$ is a candidate for a local minimizer of $f$ on $\Omega$ - this is the only candidate for a local minimizer of $f$ on the positive $x$-axis.
+
+\item $(x_0, y_0)$ on the positive y-axis:
+
+Then we are considering $(0, y_0)$. The feasible directions here are $v \in \R^2$ with $v_1 \geq 0$. Then we have
+\[
+(y_0 - 1)v_1 + v_2 \geq 0
+\]
+for any $v_2$ and $v_1 \geq 0$. This is a contradiction if we take $v_1 = 0$, so $f$ has no local minimizers along the positive $y$-axis.
+
+\item $(x_0, y_0)$ is the origin:
+
+Then we are considering $(0,0)$. The feasible directions here are $v \in \R^2$ with $v_1, v_2 \geq 0$. Then we have
+\[
+-v_1 + v_2 \geq 0
+\]
+for all $v_1, v_2 \geq 0$, a contradiction. Therefore the origin is not a local minimizer of $f$.
+\end{enumerate}
+We conclude that the only candidate for a local minimizer of $f$ is $(1/2, 0)$. It turns out that this is actually a global minimizer of $f$ on $\Omega$. (This is to be seen.)
+\end{enumerate}
+
+\subsection{Second Order Necessary Condition}
+
+\begin{theorem}
+(Second order necessary condition for a local minimum, or SONC) Let $f : \R^n \supseteq \Omega \to \R$ be $C^2$. If $x_0 \in \Omega$ is a local minimizer of $f$, then for any feasible direction $v$ at $x_0$ the following conditions hold:
+\begin{enumerate}[(i)]
+\item $\nabla f(x_0) \cdot v \geq 0$.
+\item If $\nabla f(x_0) \cdot v = 0$, then $v^T \nabla^2 f(x_0) v \geq 0$.
+\end{enumerate}
+\end{theorem}
+\begin{proof}
+Fix a feasible direction $v$ at $x_0$. Then $f(x_0) \leq f(x_0 + sv)$ for sufficiently small $s$. By Taylor's theorem,
+\[
+f(x_0 + sv) = f(x_0) + s \nabla f(x_0) + \frac{1}{2} s^2 v^T \nabla^2 f(x_0) v + o(s^2),
+\]
+so by the FONC,
+\[
+f(x_0 + sv) - f(x_0) = \frac{1}{2} s^2 v^T \nabla^2 f(x_0) v + o(s^2).
+\]
+If $v^T \nabla^2 f(x_0) v < 0$, then for sufficiently small $s$ the right side is negative, implying that $f(x_0 + sv) < f(x_0)$ for such $s$, which contradicts local minimality of $f(x_0)$. Therefore $v^T \nabla^2 f(x_0) \geq 0$.
+\end{proof}
+\begin{corollary}
+If $f : \R^n \supseteq \Omega \to \R$ is $C^2$ and $x_0$ is a local minimizer of $f$ in the interior of $\Omega$, then the following conditions hold:
+\begin{enumerate}[(i)]
+\item $\nabla f(x_0) = 0$.
+\item $\nabla^2 f(x_0)$ is positive semidefinite.
+\end{enumerate}
+\end{corollary}
+
+% check over this
+\subsection{Sylvester's Criterion}
+Here's a useful criterion for determining when a matrix is positive definite or positive semidefinite.
+\begin{definition}
+A principal minor of a square matrix $A$ is the determinant of a submatrix of $A$ obtained by removing any $k$ rows and the corresponding $k$ columns, $k \geq 0$. A leading principal minor of $A$ is the determinant of a submatrix obtained by removing the last $k$ rows and $k$ columns of $A$, $k \geq 0$.
+\end{definition}
+
+\begin{theorem}
+(Sylvester's criterion for positive definite self-adjoint matrices) If $A$ is a self-adjoint matrix, then $A \succ 0$ if and only if all of the leading principal minors of $A$ are positive.
+\end{theorem}
+\begin{theorem}
+(Sylvester's criterion for positive semidefinite self-adjoint matrices) If $A$ is a self-adjoint matrix, then $A \succeq 0$ if and only if all of the principal minors of $A$ are non-negative.
+\end{theorem}
+
+\subsection{Examples of using the SONC}
+
+\begin{enumerate}
+\item 
+Consider the problem
+\begin{align*}
+\min_{x \in \Omega} f(x,y) = x^2 - xy + y^2 - 3y \qquad \text{over } \Omega = \R^2.
+\end{align*}
+Recall that $(1,2)$ was the only candidate for a local minimizer of $f$ on $\Omega$. We now check that the SONC holds. Since $(1,2)$ is an interior point of $\Omega$, we must have $\nabla^2 f(1,2) \succeq 0$. We have
+\[
+\nabla^2 f(1,2) = \begin{pmatrix}
+2 & -1 \\ -1 & 2
+\end{pmatrix}.
+\]
+All of the leading principal minors of $\nabla^2 f(1,2)$ are positive, so $(1,2)$ satisfies the SONC by Sylvester's criterion. 
+
+\item 
+Consider the problem
+\begin{align*}
+\min_{x \in \Omega} f(x,y) = x^2 - x + y + xy \qquad \text{over } \Omega = \{(x,y) \in \R^2 : x,y \geq 0\}.
+\end{align*}
+Recall that $(1/2, 0)$ was the only candidate for a local minizer of $f$. We have
+\[
+\nabla^2 f(1/2, 0) = \begin{pmatrix}
+2 & 1 \\
+1 & 0
+\end{pmatrix}.
+\]
+To satisfy the SONC, we must have 
+\[
+v^T \nabla^2 f(1/2, 0) v \geq 0
+\] 
+for all feasible directions $v$ at $(1/2, 0)$ such that $\nabla f(1/2, 0) \cdot v = 0$. We have
+\[
+\nabla f(1/2, 0) = (0, 3/2),
+\]
+so if $v = (v_1, 0)$, then $v$ is a feasible direction at $(1/2, 0)$ with $\nabla f(1,2, 0) \cdot v = 0$. Then
+\[
+v^T \nabla^2 f(1/2, 0) v = \begin{pmatrix}
+v_1 & 0
+\end{pmatrix}\begin{pmatrix}
+2 & 1 \\
+1 & 0
+\end{pmatrix}\begin{pmatrix}
+v_1 \\ 0
+\end{pmatrix} = \begin{pmatrix}
+v_1 & 0
+\end{pmatrix} \begin{pmatrix}
+2v_1 \\ v_1
+\end{pmatrix} = 2v_1^2 \geq 0.
+\]
+So the SONC is satisfied.
+\end{enumerate}
+
+\subsection{Completing the Square}
+
+Let $A$ be a symmetric positive definite $n \times n$ matrix. Our problem is 
+\begin{align*}
+\min_{x \in \Omega} f(x) = \frac{1}{2} x^T Ax - b \cdot x \qquad \text{over } \Omega = \R^n.
+\end{align*} 
+The FONC tells us that if $x_0$ is a local minimizer of $f$, then since $x_0$ is an interior point, $\nabla f(x_0) = 0$. We thus have $Ax_0 = b$, so since $A$ is invertible (positive eigenvalues), $x_0 = A^{-1}b$. Therefore $x_0 = A^{-1}b$ is the \emph{unique} candidate for a local minimizer of $f$ on $\Omega$.
+
+
+The SONC then tells us that $\nabla^2 f(x_0) = A$, so that $\nabla^2 f(x_0) \succ 0$, implying that $x_0   = A^{-1}b$ is a candidate for a local minimizer of $f$ on $\Omega$.
+
+In fact, the candidate $x_0$ is a global minimizer. Why? We will "complete the square". We can write
+\[
+f(x) = 	\frac{1}{2} x^T Ax - b \cdot x = \frac{1}{2}(x - x_0)^T A(x-x_0) - \frac{1}{2} x_0^T A x_0;
+\]
+this relies on symmetry. (Long rearranging of terms.) In this form it is obvious that $x_0$ is a global minimizer of $f$ over $\Omega$.
+
+\newpage
+
+
+\section{Sufficient Condition for an Interior Local Minimizer (May 21)}
+
+\subsection{A Sufficient Condition}
+\begin{lemma} 
+If $A$ is symmetric and positive-definite, then  there is an $a > 0$ such that $v^T A v \geq a \|v\|^2$ for all $v$.
+\end{lemma}
+\begin{proof}
+There is an orthogonal matrix $Q$ with $Q^T A Q = \mathrm{diag}(\lambda_1, \dots, \lambda_n)$. If $v = Qw$,
+\begin{align*}
+v^T A v &= (Qw)^T A Qw \\
+&= w^T (Q^T A Q) w \\
+&= \lambda_1 w_1^2 + \cdots + \lambda_n w_n^2 \\
+&\geq \min\{\lambda_1, \dots, \lambda_n\} \|w\|^2 \\
+&= \min\{\lambda_1, \dots, \lambda_n\} \|v\|^2 \qquad \text{since $Q$ is orthogonal}
+\end{align*}
+Since $A$ is positive-definite, every eigenvalue is positive and we are done.
+\end{proof}
+
+\begin{theorem}
+(Second order sufficient conditions for interior local minimizers) Let $f$ be $C^2$ on $\Omega \subseteq \R^n$, and let $x_0$ be an interior point of $\Omega$ such that $\nabla f(x_0) = 0$ and $\nabla^2 f(x_0) \succ 0$. Then $x_0$ is a strict local minimizer of $f$.
+\end{theorem}
+\begin{proof}
+The condition $\nabla^2 f(x_0) \succ 0$ implies there is an $a > 0$ such that $v^T \nabla^2 f(x_0) v \geq a \cdot \|v\|^2$ for all $v$. By Taylor's theorem we have
+\[
+f(x_0 + v) - f(x_0) = \frac{1}{2} v^T \nabla^2 f(x_0) v + o(\|v\|^2) \geq \frac{1}{2} a\|v\|^2 + o(\|v\|^2) = \|v\|^2 \left( \frac{a}{2} + \frac{o(\|v\|^2)}{\|v\|^2} \right).
+\]
+For sufficiently small $v$ the right hand side is positive, so $f(x_0 + v) > f(x_0)$ for all such $v$. Therefore $x_0$ is a strict local minimizer of $f$ on $\Omega$.
+\end{proof}
+
+\subsection{Examples}
+\begin{enumerate}[(i)]
+\item 
+Consider $f(x,y) = xy$. The gradient is $\nabla f(x,y) = (y,x)$ and the Hessian is 
+\[
+\nabla^2 f(x,y) = \begin{pmatrix}
+0 & 1 \\ 1 & 0
+\end{pmatrix}.
+\]
+Suppose we want to minimize $f$ on all of $\Omega = \R^2$. By the FONC, the only candidate for a local minimizer is $(0,0)$. The Hessian's eigenvalues are $\pm 1$, so it is not positive definite. We conclude by the SONC that the origin is not a local minimizer of $f$.
+
+\item 
+Consider the same function $f(x,y) = xy$ on $\Omega = \{(x,y) \in \R^2, x, y \geq 0\}$. We claim that every point of the boundary of $\Omega$ is a local minimizer of $f$.
+
+Consider $(x,0)$ with $x > 0$. The feasible directions here are $v$ with $v_2 \geq 0$. The FONC tells us that $\nabla f(x,0) \cdot v\geq 0$. This dot product is $xv_2 \geq 0$, so $(x,0)$ satisfies the FONC. Therefore every point on the positive x-axis is a candidate for a local minimizer. As for the SONC, $\nabla f(x,0) \cdot v = xv_2 = 0$ if and only if $v_2 = 0$. Then $v^T \nabla^2 f(x,0) v = 0$. Of course, this tells us nothing; we need a sufficient condition that works for boundary points. That's for next lecture.
+
+Or, you could just say that $f = 0$ on the boundary of $\Omega$ and is positive on the interior, so every point of the boundary of $\Omega$ is a local minimizer (not strict) of $f$.
+
+\end{enumerate}
+
+\newpage
+\section{Constrained Optimization (May 26)}
+
+Consider the following minimization problem:
+\begin{align*}
+\text{minimize } &f(x,y) = xy \\
+\text{subject to } &x^2 + y^2 \leq 1
+\end{align*}
+Let $\Omega$ be the feasible set. The feasible directions at a point $(x_0, y_0) \in \Omega$ are the $(v, w) \in \R^2$ such that $(v, w) \cdot (x_0, y_0) < 0$, or $vx_0 + wy_0 < 0$. By the FONC for a minimizer, $\nabla f(x_0, y_0) \cdot (v, w) \geq 0$, so $wx_0 + vy_0 \geq 0$. Note that a local minimum must occur on the boundary. (Why?) We have three cases, depending on the sign of $x_0 + y_0$.
+\begin{enumerate}[(i)]
+\item $x_0 + y_0 < 0$: can't occur
+\item $x_0 + y_0 > 0$: can't occur
+\item $x_0 + y_0 = 0$: good!
+\end{enumerate}
+(This part could not be finished as attention had to be diverted from the lecture.)
+
+\subsection{Second Order Necessary Condition for a Local Minimizer}
+
+\begin{theorem}
+(Second order sufficient condition for a local minimizer) Let $f$ be $C^2$ on $\Omega \subseteq \R^n$ and suppose $x_0 \in \Omega$ satisfies
+\begin{enumerate}[(i)]
+\item $\nabla f(x_0) \cdot v \geq 0$ for all feasible directions $v$ at $x_0$,
+\item if $\nabla f(x_0) \cdot v = 0$ for some such $v$, then $v^T \nabla^2 f(x_0) v > 0$.
+\end{enumerate}
+Then $x_0$ is a local minimizer of $f$ on $\Omega$.
+\end{theorem}
+
+\subsection{Optimization with Equality Constraints}
+
+Consider the minimization problem
+\begin{align*}
+\text{minimize } &f(x,y) \\
+\text{subject to } &h(x,y) = x^2 + y^2 - 1 = 0
+\end{align*}
+Suppose $(x_0, y_0)$ is a local minimizer. Two cases:
+\begin{enumerate}
+\item $\nabla f(x_0, y_0) \neq 0$: we claim that $\nabla f(x_0, y_0)$ is perpendicular to the tangent space to the unit circle $h^{-1}(\{0\})$ at $(x_0, y_0)$. If this is not the case, then we obtain a contradiction by looking at the level sets of $f$, to which $\nabla f$ is perpendicular. Therefore $\nabla f(x_0, y_0) = \lambda \nabla h(x_0, y_0)$ for some $\lambda$.
+
+\item $\nabla f(x_0, y_0) = 0$: as in the previous case, $\lambda = 0$.
+\end{enumerate}
+In either case, at a local minimizer, the gradient of the function to be minimized is parallel to the gradient of the constraints.
+
+We now recall some elementary differential geometry.
+\begin{definition}
+For us, a surface is the set of common zeroes of a finite set of $C^1$ functions. 
+\end{definition}
+\begin{definition}
+For us, a differentiable curve on the surface $M \subseteq \R^n$ is the image of a $C^1$ function $x : (a, b) \to M$.
+\end{definition}
+\begin{definition}
+Let $x(s)$ be a differentiable curve on $M$ that passes through $x_0 \in M$ at time $x(0) = x_0$. The velocity vector $v = \left. \frac{d}{ds} \right|_{s=0} x(s)$ of $x(s)$ at $x_0$ is, for us, said to be a tangent vector to the surface $M$ at $x_0$. The set of all tangent vectors to $M$ at $x_0$ is called the tangent space to $M$ at $x_0$ and is denoted by $T_{x_0}M$.
+\end{definition}
+\begin{definition}
+Let $M = \{x \in \R^n : h_1(x) = \cdots = h_k(x) = 0\}$ be a surface. If $\nabla h_1(x_0), \dots, \nabla h_k(x_0)$ are all linearly independent, then $x_0$ is said to be a regular point of $M$.
+\end{definition}
+\begin{theorem}
+At a regular point $x_0 \in M$, the tangent space $T_{x_0} M$ is given by
+\[
+T_{x_0} M = \{ y \in \R^n : \nabla \mathbf{h}(x_0)y = 0 \}.
+\]
+\end{theorem}
+\begin{proof}
+It's in the book. Use the implicit function theorem.
+\end{proof}
+\begin{lemma}
+Let $f, h_1, \dots, h_k$ be $C^1$ functions on the open set $\Omega \subseteq \R^n$. Let $x_0 \in M = \{ x \in \Omega : h_1(x) = \cdots = h_k(x) = 0 \}$. Suppose $x_0$ is a local minimizer of $f$ subject to the constraints $h_i(x) = 0$. Then $\nabla f(x_0)$ is perpendicular to $T_{x_0}M$.
+\end{lemma}
+\begin{proof}
+Without loss of generality, suppose $\Omega = \R^n$. Let $v \in T_{x_0}M$. Then $v = \left. \frac{d}{ds} \right|_{s=0}x(s)$ for some differentiable curve $x(s)$ in $M$ with $x(0) = x_0$. Since $x_0$ is a local minimizer of $f$, $0$ is a local minimizer of $f \circ x$, so $\nabla f(x_0) \cdot x'(0) = \nabla f(x_0) \cdot v = 0$.
+\end{proof}
+
+\newpage
+
+\section{Lagrange Multipliers (May 28)}
+
+\subsection{First Order Necessary Condition for a Local Minimizer Under Equality Constraints}
+
+Here is the first order necessary condition for a local minimizer under equality constraints.
+\begin{theorem}
+(Lagrange multipliers) Let $f, h_1, \dots, h_k$ be $C^1$ functions on some open $\Omega \subseteq \R^n$. Suppose $x_0$ is a local minimizer of $f$ subject to the constraints $h_1(x), \dots, h_k(x) = 0$, which is also a regular point of these constraints. Then there are $\lambda_1, \dots, \lambda_k \in \R$ ("Lagrange multipliers") such that
+\[
+\nabla f(x_0) + \lambda_1 \nabla h_1(x_0) + \cdots + \lambda_k \nabla h_k(x_0) = 0.
+\]
+\end{theorem}
+\begin{proof}
+Since $x_0$ is regular, $T_{x_0}M = \mathrm{span}(\{ \nabla h_1(x_0), \dots, \nabla h_k(x_0) \})^\perp$. By a lemma from last class, $\nabla f(x_0) \in (T_{x_0}M)^\perp$. Therefore $\nabla f(x_0) \in \mathrm{span}(\{ \nabla h_1(x_0), \dots, \nabla h_k(x_0) \})$, since we are dealing with a finite dimensional vector space. We are done.
+\end{proof}
+
+\subsection{The Box Example}
+
+Given a fixed area $A > 0$, how do we construct a box of maximum volume with surface area $A$? Suppose the volume is $V(x,y,z) = xyz$ and the area is $A(x,y,z) = 2(xy+xz+yz)$. Our problem is stated as a maximization problem, so we have to convert it to a minimization problem. Let $f = -V$. We are therefore dealing with the problem
+\begin{align*}
+\text{minimize } &f(x,y,z) = -xyz \\
+\text{subject to } &h(x,y,z) = A(x,y,z) - A = 0, x,y,z \geq 0
+\end{align*}
+But we don't know how to deal with inequality constraints right now, so we have to make some changes. Note that if any one of $x,y,z$ is zero, then the volume is zero. Therefore the problem we want to consider is really the problem
+\begin{align*}
+\text{minimize } &f(x,y,z) \\
+\text{subject to } &h(x,y,z) = 0, x,y,z > 0
+\end{align*}
+Now, if $\Omega = \{(x,y,z) \in \R^3 : x,y,z > 0\}$, then the above minimization problem may be solved using the first order necessary condition we gave above, for the set $\Omega$ is open.
+
+Suppose $(x_0, y_0, z_0)$ is a local minimizer of $f$ subject to the constraint $h(x,y,z) = 0$. This point is regular because we are only considering points whose coordinates are all positive. Then there is a $\lambda \in \R$ such that $\nabla f(x_0, y_0, z_0) + \lambda \nabla h(x_0, y_0, z_0) = 0$. Therefore
+\[
+(-y_0z_0, -x_0z_0, -x_0y_0) + \lambda (2y_0 + 2z_0, 2x_0 + 2z_0, 2x_0 + 2y_0) = (0,0,0).
+\]
+Equivalently, 
+\begin{align*}
+2\lambda (y_0 + z_0) &= y_0z_0 \\
+2\lambda (x_0 + z_0) &= x_0z_0 \\
+2\lambda (x_0 + y_0) &= x_0y_0
+\end{align*}
+Add all of these equations together:
+\[
+2\lambda( 2x_0 + 2y_0 + 2z_0 ) = x_0z_0 + x_0y_0 + y_0z_0 = \frac{A}{2} > 0
+\]
+implying that $\lambda > 0$. The first two equations tell us that
+\begin{align*}
+2\lambda x_0 (y_0 + z_0) &= x_0y_0z_0 \\
+2\lambda y_0 (x_0 + z_0) &= x_0y_0z_0.
+\end{align*}
+Subtracting these two equations gives $2\lambda (x_0z_0 - y_0z_0) = 0$. Cancelling the $z_0$'s gives $2\lambda (x_0 - y_0) = 0$, and since $\lambda > 0$, we have $x_0 = y_0$. Since we could have done the same thing with the other pairs of equations, we get $x_0 = y_0 = z_0$. 
+
+Physically, this tells us that in order to maximize the volume of a rectangular solid of fixed area, we must make a cube. Note that we haven't actually solved the maximization problem; we've only figured out what form its solutions must take.
+
+\subsection{Second Order Necessary Conditions for a Local Minimizer Under Equality Constraints}
+
+\begin{theorem}
+Let $f, h_1, \dots, h_k$ be $C^2$ on some open set $\Omega \subseteq \R^n$. Suppose $x_0$ is a regular point which is a local minimizer of $f$ subject to the constraints. Then
+\begin{enumerate}[(i)]
+\item
+There are $\lambda_1, \dots, \lambda_k \in \R$ such that
+\[
+\nabla f(x_0) + \lambda_1 \nabla h_1(x_0) + \cdots + \lambda_k \nabla h_k(x_0) = 0.
+\] 
+
+\item
+The "Lagrangian"
+\[
+L(x_0) = \nabla^2 f(x_0) + \sum \lambda_i \nabla^2 h_i(x_0)
+\]
+is positive semi-definite on the tangent space $T_{x_0}M$, where $M = h_1^{-1}(\{0\}) \cap \cdots \cap h_k^{-1}(\{0\})$.
+\end{enumerate}
+\end{theorem}
+
+\end{document}
