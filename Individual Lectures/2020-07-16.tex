@@ -1,0 +1,64 @@
+\documentclass[11pt]{article}
+\usepackage[utf8]{inputenc}
+\usepackage{amsmath, amsthm, amssymb, amsfonts, mathtools, tikz-cd, float}
+\usepackage[left=2.5cm,right=2.5cm]{geometry}
+\usepackage[shortlabels]{enumitem}
+
+\newcommand{\Int}{\text{Int}}
+\newcommand{\R}{\mathbb{R}}
+\newcommand{\Z}{\mathbb{Z}}
+\newcommand{\pd}{\partial}
+\renewcommand{\epsilon}{\varepsilon}
+\renewcommand{\hat}{\widehat}
+\renewcommand{\tilde}{\widetilde}
+
+\newtheorem{theorem}{Theorem}[section]
+\newtheorem{corollary}{Corollary}[theorem]
+\newtheorem{lemma}[theorem]{Lemma}
+\newtheorem{proposition}{Proposition}
+
+\newtheorem{definition}{Definition}
+
+\pagestyle{myheadings}
+
+
+\begin{document}
+
+\section{More on Conjugate Directions (July 16)}
+
+\subsection{Geometric Interpretation}
+
+Let $d_0, \dots, d_{n-1}$ be a set of non-zero $Q$-orthogonal vectors in $\R^n$, where $Q$ is symmetric and positive definite. Note that these vectors are linearly independent by a result from last lecture. Let $B_k$ denote the subspace spanned by the first $k$ vectors. We have an increasing sequence
+\[
+B_0 \subsetneq B_1 \subsetneq \cdots \subsetneq B_n,
+\]
+and $\dim(B_k) = k$.
+
+\begin{theorem}
+The sequence $\{x_k\}_{k=0}^\infty$ generated from $x_0$ by the method of conjugate directions has the property that $x_k$ minimizes $f(x) = \frac{1}{2}x^TQx - b^Tx$ on the affine subspace $x_0 + B_k$.
+\end{theorem}
+
+Recall the function $q(x) = \frac{1}{2}(x-x_*)^TQ(x-x_*)$, which differs from $f(x)$ by a constant. They have the same minimizers.
+
+If $Q = I$, then $q(x) = \frac{1}{2}|x-x_*|^2$. Then $x_k \in x_0 + B_k$ is the closest point in $x_0 + B_k$ to $x_*$, by the theorem.
+
+Before proving the theorem, recall the following result about convex functions.
+
+\begin{lemma}
+Let $f$ be a $C^1$ convex function defined on a convex domain $\Omega \subseteq \R^n$. Suppose there is an $x_* \in \Omega$ such that $\nabla f(x_*) \cdot (y - x_*) \geq 0$ for all $y \in \Omega$. Then $x_*$ is a global minimizer of $f$ on $\Omega$. The converse is obviously true.
+\end{lemma}
+
+Geometrically, this means that if we move in any feasible direction from the point $x_*$, the function is increasing. Hence $x_*$ is a local minimizer; convexity implies it is global. With this result in mind, we prove the theorem.
+
+\begin{proof}
+The affine subspace $\Omega = x_0 + B_k$ is convex. \textbf{(This proof could not be finished as attention had to be diverted from the lecture.)}
+\end{proof}
+
+\begin{corollary}
+$x_n$ minimizes $f(x)$ on $\R^n$. That is, $x_n = x_*$; the method of conjugate directions for this function $f$ terminates in at most $n$ steps. 
+\end{corollary}
+
+When $Q = I$, then $q(x)$ is half the distance squared from $x$ to $x_*$. What if $Q \neq I$. $q$ is still a metric on $\R^n$. Thus $x_k$ is the point "closest" to $x_*$ on the affine subspace $x_0 + B_k$. \textbf{(These notes are incomplete.)}
+
+\end{document}
+ 
