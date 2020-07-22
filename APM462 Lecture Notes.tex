@@ -1,0 +1,1742 @@
+\documentclass[11pt]{article}
+\usepackage[utf8]{inputenc}
+\usepackage{amsmath, amsthm, amssymb, amsfonts, mathtools, tikz-cd, float, cancel}
+\usepackage[hidelinks]{hyperref}
+\usepackage[left=2.5cm,right=2.5cm]{geometry}
+\usepackage[shortlabels]{enumitem}
+
+\hypersetup{linktoc=all}
+
+\newcommand{\Int}{\text{Int}}
+\newcommand{\R}{\mathbb{R}}
+\newcommand{\Z}{\mathbb{Z}}
+\newcommand{\pd}{\partial}
+\renewcommand{\epsilon}{\varepsilon}
+
+% HOW TO READ THESE
+% (definiton/theory/corollary/lemma) a.b.c is the cth respective object of section a, subsection b
+
+\newtheorem{definition}{Definition}[subsection]
+\newtheorem{theorem}{Theorem}[subsection]
+\newtheorem{corollary}{Corollary}[subsection]
+\newtheorem{lemma}{Lemma}[subsection]
+
+\pagestyle{myheadings}
+\title{APM462 Course Notes}
+\author{Kain Dineen}
+
+\begin{document}
+\maketitle
+
+The following are lecture notes for APM462 (Nonlinear Optimization) offered in the Summer of 2020, taught by Jonathan Korman. These lecture notes were typed during lectures, and are not based off of any handwritten notes. These notes were created three weeks in to the course, and do not (as of now) include the material from the first two weeks.
+
+\tableofcontents
+
+\newpage
+\section{Unconstrained Finite-Dimensional Optimization (May 19)}
+
+\subsection{First Order Necessary Condition}
+
+Our main problem is
+\begin{align*}
+&\min_{x \in \Omega} f(x) \qquad f : \R^n \supseteq \Omega \to \R,
+\end{align*}
+where $\Omega$ is one of the following three types:
+\begin{itemize}
+\item $\Omega = \R^n$.
+\item $\Omega$ open.
+\item $\Omega$ the closure of an open set.
+\end{itemize}
+We can consider minimization problems without any loss of generality, since any maximization problem can be converted to a minimization problem by taking the negative of the function in question: that is,
+\[
+\max_{x \in \Omega} f(x) = \min_{x \in \Omega} -f(x).
+\]
+\begin{definition}
+Given $\Omega \subseteq \R^n$ and a point $x_0 \in \Omega$, we say that the vector $v \in \R^n$ is a feasible direction at $x_0$ if there is an $\overline{s} > 0$ such that $x_0 + sv \in \Omega$ for all $s \in [0, \overline{s}]$.
+\end{definition}
+\begin{theorem}
+(First order necessary condition for a local minimum, or FONC) Let $f : \R^n \supseteq \Omega \to \R$ be $C^1$. If $x_0 \in \Omega$ is a local minimizer of $f$, then $\nabla f(x_0) \cdot v \geq 0$ for all feasible directions $v$ at $x_0$.
+\end{theorem}
+First we deduce a familiar case of the theorem - the one we know from second-year calculus.
+\begin{corollary}
+If $f : \R^n \supseteq \Omega \to \R$ is $C^1$ and $x_0$ is a local minimizer of $f$ in the interior of $\Omega$, then $\nabla f(x_0) = 0$.
+\end{corollary}
+\begin{proof}
+If $x_0$ is an interior point of $\Omega$, then all directions at $x_0$ are feasible. In particular, for any such $v$, we have $\nabla f(x_0) \cdot (v) \geq 0$ and $\nabla f(x_0) \cdot (-v) \geq 0$, which implies $\nabla f(x_0) = 0$ as all directions are feasible at $x_0$.
+\end{proof}
+Now we prove the theorem.
+\begin{proof}
+Reduce to a single-variable problem by defining $g(s) = f(x_0 + sv)$, where $s \geq 0$. Then $0$ is a local minimizer of $g$. Taylor's theorem gives us
+\[
+g(s) - g(0) = s g'(0) + o(s) = s \nabla f(x_0) \cdot v + o(s).
+\]
+If $\nabla f(x_0) \cdot v < 0$, then for sufficiently small $s$ the right side is negative. This implies that $g(s) < g(0)$ for those $s$, a contradiction. Therefore $\nabla f(x_0) \cdot v \geq 0$.
+\end{proof}
+
+\subsection{Examples of using the FONC}
+\begin{enumerate}
+\item 
+Consider the problem
+\begin{align*}
+\min_{x \in \Omega} f(x,y) = x^2 - xy + y^2 - 3y \qquad \text{over } \Omega = \R^2.
+\end{align*}
+By the corollary to the FONC, we want to find the points $(x_0, y_0)$ where $\nabla f(x_0, y_0) = 0$. We have
+\begin{align*}
+\nabla f(x,y) = (2x-y, -x+2y-3),
+\end{align*}
+so we want to solve 
+\begin{align*}
+2x - y &= 0 \\
+-x + 2y &= 3,
+\end{align*}
+which has solution $(x_0, y_0) = (1,2)$. Therefore $(1,2)$ is the only \emph{candidate} for a local minimizer. That is, if the function $f$ has a local minimizer in $\R^2$, then it must be $(1,2)$.
+
+It turns out that $(1,2)$ is a global minimizer for $f$ on $\Omega = \R^2$. By some work, we have
+\[
+f(x,y) = \left(x - \frac{y}{2}\right)^2 + \frac{3}{4}(y-2)^2 - 3.
+\]
+In this form, it is obvious that a \emph{global} minimizer occurs at the point where the squared terms are zero, if such a point exists. That point is $(1,2)$.
+
+\item
+Consider the problem
+\begin{align*}
+\min_{x \in \Omega} f(x,y) = x^2 - x + y + xy \qquad \text{over } \Omega = \{(x,y) \in \R^2 : x,y \geq 0\}.
+\end{align*}
+We have
+\[
+\nabla f(x,y) = (2x + y - 1, x + 1).
+\]
+To apply the FONC, we'll divide the feasible set $\Omega$ into four different regions. Suppose that $(x_0, y_0)$ is a local minimizer of $f$ on $\Omega$.
+\begin{enumerate}[(i)]
+\item $(x_0, y_0)$ is an interior point: 
+
+By the corollary to the FONC, we must have $\nabla f(x_0, y_0) = 0$. Then $x_0 = -1$, which is not in the interior of $\Omega$. This case fails.
+
+\item $(x_0, y_0)$ on the positive x-axis: 
+
+Then we are considering $(x_0, 0)$. The feasible directions at $(x_0, 0)$ are those vectors $v \in \R^2$ with $v_2 \geq 0$. The FONC tells us that $\nabla f(x_0,0) \cdot v \geq 0$ for all feasible directions $v$. We then have
+\[
+(2x_0 - 1)v_1 + (x_0 + 1)v_2 \geq 0
+\]
+for all $v_1$ and all $v_2 \geq 0$. In particular, this holds for $v_2 = 0$, so $(2x_0 - 1)v_1 \geq 0$ for all $v_1$, implying $x_0 = 1/2$. Therefore $(1/2, 0)$ is a candidate for a local minimizer of $f$ on $\Omega$ - this is the only candidate for a local minimizer of $f$ on the positive $x$-axis.
+
+\item $(x_0, y_0)$ on the positive y-axis:
+
+Then we are considering $(0, y_0)$. The feasible directions here are $v \in \R^2$ with $v_1 \geq 0$. Then we have
+\[
+(y_0 - 1)v_1 + v_2 \geq 0
+\]
+for any $v_2$ and $v_1 \geq 0$. This is a contradiction if we take $v_1 = 0$, so $f$ has no local minimizers along the positive $y$-axis.
+
+\item $(x_0, y_0)$ is the origin:
+
+Then we are considering $(0,0)$. The feasible directions here are $v \in \R^2$ with $v_1, v_2 \geq 0$. Then we have
+\[
+-v_1 + v_2 \geq 0
+\]
+for all $v_1, v_2 \geq 0$, a contradiction. Therefore the origin is not a local minimizer of $f$.
+\end{enumerate}
+We conclude that the only candidate for a local minimizer of $f$ is $(1/2, 0)$. It turns out that this is actually a global minimizer of $f$ on $\Omega$. (This is to be seen.)
+\end{enumerate}
+
+\subsection{Second Order Necessary Condition}
+
+\begin{theorem}
+(Second order necessary condition for a local minimum, or SONC) Let $f : \R^n \supseteq \Omega \to \R$ be $C^2$. If $x_0 \in \Omega$ is a local minimizer of $f$, then for any feasible direction $v$ at $x_0$ the following conditions hold:
+\begin{enumerate}[(i)]
+\item $\nabla f(x_0) \cdot v \geq 0$.
+\item If $\nabla f(x_0) \cdot v = 0$, then $v^T \nabla^2 f(x_0) v \geq 0$.
+\end{enumerate}
+\end{theorem}
+\begin{proof}
+Fix a feasible direction $v$ at $x_0$. Then $f(x_0) \leq f(x_0 + sv)$ for sufficiently small $s$. By Taylor's theorem,
+\[
+f(x_0 + sv) = f(x_0) + s \nabla f(x_0) + \frac{1}{2} s^2 v^T \nabla^2 f(x_0) v + o(s^2),
+\]
+so by the FONC,
+\[
+f(x_0 + sv) - f(x_0) = \frac{1}{2} s^2 v^T \nabla^2 f(x_0) v + o(s^2).
+\]
+If $v^T \nabla^2 f(x_0) v < 0$, then for sufficiently small $s$ the right side is negative, implying that $f(x_0 + sv) < f(x_0)$ for such $s$, which contradicts local minimality of $f(x_0)$. Therefore $v^T \nabla^2 f(x_0) \geq 0$.
+\end{proof}
+\begin{corollary}
+If $f : \R^n \supseteq \Omega \to \R$ is $C^2$ and $x_0$ is a local minimizer of $f$ in the interior of $\Omega$, then the following conditions hold:
+\begin{enumerate}[(i)]
+\item $\nabla f(x_0) = 0$.
+\item $\nabla^2 f(x_0)$ is positive semidefinite.
+\end{enumerate}
+\end{corollary}
+
+% check over this
+\subsection{Sylvester's Criterion}
+Here's a useful criterion for determining when a matrix is positive definite or positive semidefinite.
+\begin{definition}
+A principal minor of a square matrix $A$ is the determinant of a submatrix of $A$ obtained by removing any $k$ rows and the corresponding $k$ columns, $k \geq 0$. A leading principal minor of $A$ is the determinant of a submatrix obtained by removing the last $k$ rows and $k$ columns of $A$, $k \geq 0$.
+\end{definition}
+
+\begin{theorem}
+(Sylvester's criterion for positive definite self-adjoint matrices) If $A$ is a self-adjoint matrix, then $A \succ 0$ if and only if all of the leading principal minors of $A$ are positive.
+\end{theorem}
+\begin{theorem}
+(Sylvester's criterion for positive semidefinite self-adjoint matrices) If $A$ is a self-adjoint matrix, then $A \succeq 0$ if and only if all of the principal minors of $A$ are non-negative.
+\end{theorem}
+
+\subsection{Examples of using the SONC}
+
+\begin{enumerate}
+\item 
+Consider the problem
+\begin{align*}
+\min_{x \in \Omega} f(x,y) = x^2 - xy + y^2 - 3y \qquad \text{over } \Omega = \R^2.
+\end{align*}
+Recall that $(1,2)$ was the only candidate for a local minimizer of $f$ on $\Omega$. We now check that the SONC holds. Since $(1,2)$ is an interior point of $\Omega$, we must have $\nabla^2 f(1,2) \succeq 0$. We have
+\[
+\nabla^2 f(1,2) = \begin{pmatrix}
+2 & -1 \\ -1 & 2
+\end{pmatrix}.
+\]
+All of the leading principal minors of $\nabla^2 f(1,2)$ are positive, so $(1,2)$ satisfies the SONC by Sylvester's criterion. 
+
+\item 
+Consider the problem
+\begin{align*}
+\min_{x \in \Omega} f(x,y) = x^2 - x + y + xy \qquad \text{over } \Omega = \{(x,y) \in \R^2 : x,y \geq 0\}.
+\end{align*}
+Recall that $(1/2, 0)$ was the only candidate for a local minizer of $f$. We have
+\[
+\nabla^2 f(1/2, 0) = \begin{pmatrix}
+2 & 1 \\
+1 & 0
+\end{pmatrix}.
+\]
+To satisfy the SONC, we must have 
+\[
+v^T \nabla^2 f(1/2, 0) v \geq 0
+\] 
+for all feasible directions $v$ at $(1/2, 0)$ such that $\nabla f(1/2, 0) \cdot v = 0$. We have
+\[
+\nabla f(1/2, 0) = (0, 3/2),
+\]
+so if $v = (v_1, 0)$, then $v$ is a feasible direction at $(1/2, 0)$ with $\nabla f(1,2, 0) \cdot v = 0$. Then
+\[
+v^T \nabla^2 f(1/2, 0) v = \begin{pmatrix}
+v_1 & 0
+\end{pmatrix}\begin{pmatrix}
+2 & 1 \\
+1 & 0
+\end{pmatrix}\begin{pmatrix}
+v_1 \\ 0
+\end{pmatrix} = \begin{pmatrix}
+v_1 & 0
+\end{pmatrix} \begin{pmatrix}
+2v_1 \\ v_1
+\end{pmatrix} = 2v_1^2 \geq 0.
+\]
+So the SONC is satisfied.
+\end{enumerate}
+
+\subsection{Completing the Square}
+
+Let $A$ be a symmetric positive definite $n \times n$ matrix. Our problem is 
+\begin{align*}
+\min_{x \in \Omega} f(x) = \frac{1}{2} x^T Ax - b \cdot x \qquad \text{over } \Omega = \R^n.
+\end{align*} 
+The FONC tells us that if $x_0$ is a local minimizer of $f$, then since $x_0$ is an interior point, $\nabla f(x_0) = 0$. We thus have $Ax_0 = b$, so since $A$ is invertible (positive eigenvalues), $x_0 = A^{-1}b$. Therefore $x_0 = A^{-1}b$ is the \emph{unique} candidate for a local minimizer of $f$ on $\Omega$.
+
+
+The SONC then tells us that $\nabla^2 f(x_0) = A$, so that $\nabla^2 f(x_0) \succ 0$, implying that $x_0   = A^{-1}b$ is a candidate for a local minimizer of $f$ on $\Omega$.
+
+In fact, the candidate $x_0$ is a global minimizer. Why? We will "complete the square". We can write
+\[
+f(x) = 	\frac{1}{2} x^T Ax - b \cdot x = \frac{1}{2}(x - x_0)^T A(x-x_0) - \frac{1}{2} x_0^T A x_0;
+\]
+this relies on symmetry. (Long rearranging of terms.) In this form it is obvious that $x_0$ is a global minimizer of $f$ over $\Omega$.
+
+\newpage
+
+
+\section{Sufficient Condition for an Interior Local Minimizer (May 21)}
+
+\subsection{A Sufficient Condition}
+\begin{lemma} 
+If $A$ is symmetric and positive-definite, then  there is an $a > 0$ such that $v^T A v \geq a \|v\|^2$ for all $v$.
+\end{lemma}
+\begin{proof}
+There is an orthogonal matrix $Q$ with $Q^T A Q = \mathrm{diag}(\lambda_1, \dots, \lambda_n)$. If $v = Qw$,
+\begin{align*}
+v^T A v &= (Qw)^T A Qw \\
+&= w^T (Q^T A Q) w \\
+&= \lambda_1 w_1^2 + \cdots + \lambda_n w_n^2 \\
+&\geq \min\{\lambda_1, \dots, \lambda_n\} \|w\|^2 \\
+&= \min\{\lambda_1, \dots, \lambda_n\} \|v\|^2 \qquad \text{since $Q$ is orthogonal}
+\end{align*}
+Since $A$ is positive-definite, every eigenvalue is positive and we are done.
+\end{proof}
+
+\begin{theorem}
+(Second order sufficient conditions for interior local minimizers) Let $f$ be $C^2$ on $\Omega \subseteq \R^n$, and let $x_0$ be an interior point of $\Omega$ such that $\nabla f(x_0) = 0$ and $\nabla^2 f(x_0) \succ 0$. Then $x_0$ is a strict local minimizer of $f$.
+\end{theorem}
+\begin{proof}
+The condition $\nabla^2 f(x_0) \succ 0$ implies there is an $a > 0$ such that $v^T \nabla^2 f(x_0) v \geq a \cdot \|v\|^2$ for all $v$. By Taylor's theorem we have
+\[
+f(x_0 + v) - f(x_0) = \frac{1}{2} v^T \nabla^2 f(x_0) v + o(\|v\|^2) \geq \frac{1}{2} a\|v\|^2 + o(\|v\|^2) = \|v\|^2 \left( \frac{a}{2} + \frac{o(\|v\|^2)}{\|v\|^2} \right).
+\]
+For sufficiently small $v$ the right hand side is positive, so $f(x_0 + v) > f(x_0)$ for all such $v$. Therefore $x_0$ is a strict local minimizer of $f$ on $\Omega$.
+\end{proof}
+
+\subsection{Examples}
+\begin{enumerate}[(i)]
+\item 
+Consider $f(x,y) = xy$. The gradient is $\nabla f(x,y) = (y,x)$ and the Hessian is 
+\[
+\nabla^2 f(x,y) = \begin{pmatrix}
+0 & 1 \\ 1 & 0
+\end{pmatrix}.
+\]
+Suppose we want to minimize $f$ on all of $\Omega = \R^2$. By the FONC, the only candidate for a local minimizer is $(0,0)$. The Hessian's eigenvalues are $\pm 1$, so it is not positive definite. We conclude by the SONC that the origin is not a local minimizer of $f$.
+
+\item 
+Consider the same function $f(x,y) = xy$ on $\Omega = \{(x,y) \in \R^2, x, y \geq 0\}$. We claim that every point of the boundary of $\Omega$ is a local minimizer of $f$.
+
+Consider $(x,0)$ with $x > 0$. The feasible directions here are $v$ with $v_2 \geq 0$. The FONC tells us that $\nabla f(x,0) \cdot v\geq 0$. This dot product is $xv_2 \geq 0$, so $(x,0)$ satisfies the FONC. Therefore every point on the positive x-axis is a candidate for a local minimizer. As for the SONC, $\nabla f(x,0) \cdot v = xv_2 = 0$ if and only if $v_2 = 0$. Then $v^T \nabla^2 f(x,0) v = 0$. Of course, this tells us nothing; we need a sufficient condition that works for boundary points. That's for next lecture.
+
+Or, you could just say that $f = 0$ on the boundary of $\Omega$ and is positive on the interior, so every point of the boundary of $\Omega$ is a local minimizer (not strict) of $f$.
+
+\end{enumerate}
+
+\newpage
+\section{Constrained Optimization (May 26)}
+
+Consider the following minimization problem:
+\begin{align*}
+\text{minimize } &f(x,y) = xy \\
+\text{subject to } &x^2 + y^2 \leq 1
+\end{align*}
+Let $\Omega$ be the feasible set. The feasible directions at a point $(x_0, y_0) \in \Omega$ are the $(v, w) \in \R^2$ such that $(v, w) \cdot (x_0, y_0) < 0$, or $vx_0 + wy_0 < 0$. By the FONC for a minimizer, $\nabla f(x_0, y_0) \cdot (v, w) \geq 0$, so $wx_0 + vy_0 \geq 0$. Note that a local minimum must occur on the boundary. (Why?) We have three cases, depending on the sign of $x_0 + y_0$.
+\begin{enumerate}[(i)]
+\item $x_0 + y_0 < 0$: can't occur
+\item $x_0 + y_0 > 0$: can't occur
+\item $x_0 + y_0 = 0$: good!
+\end{enumerate}
+(This part could not be finished as attention had to be diverted from the lecture.)
+
+\subsection{Second Order Necessary Condition for a Local Minimizer}
+
+\begin{theorem}
+(Second order sufficient condition for a local minimizer) Let $f$ be $C^2$ on $\Omega \subseteq \R^n$ and suppose $x_0 \in \Omega$ satisfies
+\begin{enumerate}[(i)]
+\item $\nabla f(x_0) \cdot v \geq 0$ for all feasible directions $v$ at $x_0$,
+\item if $\nabla f(x_0) \cdot v = 0$ for some such $v$, then $v^T \nabla^2 f(x_0) v > 0$.
+\end{enumerate}
+Then $x_0$ is a local minimizer of $f$ on $\Omega$.
+\end{theorem}
+
+\subsection{Optimization with Equality Constraints}
+
+Consider the minimization problem
+\begin{align*}
+\text{minimize } &f(x,y) \\
+\text{subject to } &h(x,y) = x^2 + y^2 - 1 = 0
+\end{align*}
+Suppose $(x_0, y_0)$ is a local minimizer. Two cases:
+\begin{enumerate}
+\item $\nabla f(x_0, y_0) \neq 0$: we claim that $\nabla f(x_0, y_0)$ is perpendicular to the tangent space to the unit circle $h^{-1}(\{0\})$ at $(x_0, y_0)$. If this is not the case, then we obtain a contradiction by looking at the level sets of $f$, to which $\nabla f$ is perpendicular. Therefore $\nabla f(x_0, y_0) = \lambda \nabla h(x_0, y_0)$ for some $\lambda$.
+
+\item $\nabla f(x_0, y_0) = 0$: as in the previous case, $\lambda = 0$.
+\end{enumerate}
+In either case, at a local minimizer, the gradient of the function to be minimized is parallel to the gradient of the constraints.
+
+We now recall some elementary differential geometry.
+\begin{definition}
+For us, a surface is the set of common zeroes of a finite set of $C^1$ functions. 
+\end{definition}
+\begin{definition}
+For us, a differentiable curve on the surface $M \subseteq \R^n$ is the image of a $C^1$ function $x : (a, b) \to M$.
+\end{definition}
+\begin{definition}
+Let $x(s)$ be a differentiable curve on $M$ that passes through $x_0 \in M$ at time $x(0) = x_0$. The velocity vector $v = \left. \frac{d}{ds} \right|_{s=0} x(s)$ of $x(s)$ at $x_0$ is, for us, said to be a tangent vector to the surface $M$ at $x_0$. The set of all tangent vectors to $M$ at $x_0$ is called the tangent space to $M$ at $x_0$ and is denoted by $T_{x_0}M$.
+\end{definition}
+\begin{definition}
+Let $M = \{x \in \R^n : h_1(x) = \cdots = h_k(x) = 0\}$ be a surface. If $\nabla h_1(x_0), \dots, \nabla h_k(x_0)$ are all linearly independent, then $x_0$ is said to be a regular point of $M$.
+\end{definition}
+\begin{theorem}
+At a regular point $x_0 \in M$, the tangent space $T_{x_0} M$ is given by
+\[
+T_{x_0} M = \{ y \in \R^n : \nabla \mathbf{h}(x_0)y = 0 \}.
+\]
+\end{theorem}
+\begin{proof}
+It's in the book. Use the implicit function theorem.
+\end{proof}
+\begin{lemma}
+Let $f, h_1, \dots, h_k$ be $C^1$ functions on the open set $\Omega \subseteq \R^n$. Let $x_0 \in M = \{ x \in \Omega : h_1(x) = \cdots = h_k(x) = 0 \}$. Suppose $x_0$ is a local minimizer of $f$ subject to the constraints $h_i(x) = 0$. Then $\nabla f(x_0)$ is perpendicular to $T_{x_0}M$.
+\end{lemma}
+\begin{proof}
+Without loss of generality, suppose $\Omega = \R^n$. Let $v \in T_{x_0}M$. Then $v = \left. \frac{d}{ds} \right|_{s=0}x(s)$ for some differentiable curve $x(s)$ in $M$ with $x(0) = x_0$. Since $x_0$ is a local minimizer of $f$, $0$ is a local minimizer of $f \circ x$, so $\nabla f(x_0) \cdot x'(0) = \nabla f(x_0) \cdot v = 0$.
+\end{proof}
+
+\newpage
+
+\section{Lagrange Multipliers (May 28)}
+
+\subsection{First Order Necessary Condition for a Local Minimizer Under Equality Constraints}
+
+Here is the first order necessary condition for a local minimizer under equality constraints.
+\begin{theorem}
+(Lagrange multipliers) Let $f, h_1, \dots, h_k$ be $C^1$ functions on some open $\Omega \subseteq \R^n$. Suppose $x_0$ is a local minimizer of $f$ subject to the constraints $h_1(x), \dots, h_k(x) = 0$, which is also a regular point of these constraints. Then there are $\lambda_1, \dots, \lambda_k \in \R$ ("Lagrange multipliers") such that
+\[
+\nabla f(x_0) + \lambda_1 \nabla h_1(x_0) + \cdots + \lambda_k \nabla h_k(x_0) = 0.
+\]
+\end{theorem}
+\begin{proof}
+Since $x_0$ is regular, $T_{x_0}M = \mathrm{span}(\{ \nabla h_1(x_0), \dots, \nabla h_k(x_0) \})^\perp$. By a lemma from last class, $\nabla f(x_0) \in (T_{x_0}M)^\perp$. Therefore $\nabla f(x_0) \in \mathrm{span}(\{ \nabla h_1(x_0), \dots, \nabla h_k(x_0) \})$, since we are dealing with a finite dimensional vector space. We are done.
+\end{proof}
+
+\subsection{The Box Example}
+
+Given a fixed area $A > 0$, how do we construct a box of maximum volume with surface area $A$? Suppose the volume is $V(x,y,z) = xyz$ and the area is $A(x,y,z) = 2(xy+xz+yz)$. Our problem is stated as a maximization problem, so we have to convert it to a minimization problem. Let $f = -V$. We are therefore dealing with the problem
+\begin{align*}
+\text{minimize } &f(x,y,z) = -xyz \\
+\text{subject to } &h(x,y,z) = A(x,y,z) - A = 0, x,y,z \geq 0
+\end{align*}
+But we don't know how to deal with inequality constraints right now, so we have to make some changes. Note that if any one of $x,y,z$ is zero, then the volume is zero. Therefore the problem we want to consider is really the problem
+\begin{align*}
+\text{minimize } &f(x,y,z) \\
+\text{subject to } &h(x,y,z) = 0, x,y,z > 0
+\end{align*}
+Now, if $\Omega = \{(x,y,z) \in \R^3 : x,y,z > 0\}$, then the above minimization problem may be solved using the first order necessary condition we gave above, for the set $\Omega$ is open.
+
+Suppose $(x_0, y_0, z_0)$ is a local minimizer of $f$ subject to the constraint $h(x,y,z) = 0$. This point is regular because we are only considering points whose coordinates are all positive. Then there is a $\lambda \in \R$ such that $\nabla f(x_0, y_0, z_0) + \lambda \nabla h(x_0, y_0, z_0) = 0$. Therefore
+\[
+(-y_0z_0, -x_0z_0, -x_0y_0) + \lambda (2y_0 + 2z_0, 2x_0 + 2z_0, 2x_0 + 2y_0) = (0,0,0).
+\]
+Equivalently, 
+\begin{align*}
+2\lambda (y_0 + z_0) &= y_0z_0 \\
+2\lambda (x_0 + z_0) &= x_0z_0 \\
+2\lambda (x_0 + y_0) &= x_0y_0
+\end{align*}
+Add all of these equations together:
+\[
+2\lambda( 2x_0 + 2y_0 + 2z_0 ) = x_0z_0 + x_0y_0 + y_0z_0 = \frac{A}{2} > 0
+\]
+implying that $\lambda > 0$. The first two equations tell us that
+\begin{align*}
+2\lambda x_0 (y_0 + z_0) &= x_0y_0z_0 \\
+2\lambda y_0 (x_0 + z_0) &= x_0y_0z_0.
+\end{align*}
+Subtracting these two equations gives $2\lambda (x_0z_0 - y_0z_0) = 0$. Cancelling the $z_0$'s gives $2\lambda (x_0 - y_0) = 0$, and since $\lambda > 0$, we have $x_0 = y_0$. Since we could have done the same thing with the other pairs of equations, we get $x_0 = y_0 = z_0$. 
+
+Physically, this tells us that in order to maximize the volume of a rectangular solid of fixed area, we must make a cube. Note that we haven't actually solved the maximization problem; we've only figured out what form its solutions must take.
+
+\subsection{Second Order Necessary Conditions for a Local Minimizer Under Equality Constraints}
+
+\begin{theorem}
+Let $f, h_1, \dots, h_k$ be $C^2$ on some open set $\Omega \subseteq \R^n$. Suppose $x_0$ is a regular point which is a local minimizer of $f$ subject to the constraints. Then
+\begin{enumerate}[(i)]
+\item
+There are $\lambda_1, \dots, \lambda_k \in \R$ such that
+\[
+\nabla f(x_0) + \lambda_1 \nabla h_1(x_0) + \cdots + \lambda_k \nabla h_k(x_0) = 0.
+\] 
+
+\item
+The "Lagrangian"
+\[
+L(x_0) = \nabla^2 f(x_0) + \sum \lambda_i \nabla^2 h_i(x_0)
+\]
+is positive semi-definite on the tangent space $T_{x_0}M$, where $M = h_1^{-1}(\{0\}) \cap \cdots \cap h_k^{-1}(\{0\})$.
+\end{enumerate}
+\end{theorem}
+
+\newpage
+
+\section{More on Optimization with Equality Constraints (June 2)}
+
+\subsection{SONC and SOSC, Equality Constraints}
+
+\begin{theorem}
+(Second order necessary conditions for a local minimizer with equality constraints) Consider functions $f, h_1, \dots, h_k$ which are $C^2$ on the open $\Omega \subseteq \R^n$. Suppose $x_0$ is a regular point of the constraints given by $h_1(x) = \cdots = h_k(x) = 0$, and that it is a local minimizer of $f$ on $M = \bigcap h_i^{-1}(\{0\})$. Then
+\begin{enumerate}
+\item
+There exist $\lambda_1, \dots, \lambda_k \in \R$ such that
+\[
+\nabla f(x_0) + \sum \lambda_i \nabla h_i(x_0) = 0.
+\]
+
+\item
+The Lagrangian
+\[
+L(x_0) = \nabla^2 f(x_0) + \sum \lambda_i \nabla^2 h_i(x_0)
+\]
+is positive semi-definite on $T_{x_0}M$.
+\end{enumerate}
+\end{theorem}
+
+\begin{proof}
+Let $x(s)$ be a smooth curve with $x(0) = 0$ in $M$. Recall that, by the product rule,
+\begin{align*}
+\frac{d}{ds} f(x(s)) &= \nabla f(x(s)) \cdot x'(s) \\
+\frac{d^2}{ds^2} f(x(s)) &= x'(s) \cdot \nabla^2 f(x(s)) x'(s) + \nabla f(x(s)) \cdot x''(s).
+\end{align*}
+By the second order Taylor approximation, we have
+\[
+0 \leq f(x(s)) - f(x(0)) = s \left. \frac{d}{ds} \right|_{s=0} f(x(s)) + \frac{1}{2}s^2 \left. \frac{d^2}{ds^2} \right|_{s=0} f(x(s)) + o(s^2).
+\]
+This is, equivalently, 
+\[
+0 \leq f(x(s)) - f(x(0)) = s \nabla f(x_0) \cdot \underbrace{x'(0)}_{\in T_{x_0}M} + \frac{1}{2}s^2 \left. \frac{d^2}{ds^2} \right|_{s=0} f(x(s)) + o(s^2).
+\]
+Since the gradient at a regular local minimizer is perpendicular to the tangent space there, the first-order term above vanishes. We have
+\[
+0 \leq \frac{1}{2}s^2 \left. \frac{d^2}{ds^2} \right|_{s=0} f(x(s)) + o(s^2).
+\]
+By the definition of $M$, we may write the above as
+\[
+0 \leq \frac{1}{2}s^2 \left. \frac{d^2}{ds^2} \right|_{s=0} \left[ f(x(s)) + \sum \lambda_i h_i(x(s)) \right] + o(s^2).
+\]
+Or
+\[
+0 \leq \frac{1}{2} s^2 x'(0) \cdot \underbrace{\left(\nabla^2 f(x_0) + \sum \lambda_i \nabla^2 h(x_0)\right)}_{=L(x_0)}x'(0) + \frac{1}{2} s^2 \underbrace{\left(\nabla f(x_0) + \sum \lambda_i \nabla h_i(x_0)\right)}_{=0} \cdot x''(0) + o(s^2).
+\]
+Divide by $s^2$:
+\[
+0 \leq \frac{1}{2} x'(0) \cdot L(x_0) x'(0) + \frac{o(s^2)}{s^2}.
+\]
+By taking $s$ small it follows that $0 \leq \frac{1}{2} x'(0) \cdot L(x_0) x'(0)$. Since any tangent vector $v \in T_{x_0}M$ can be described as the tangent vector to a curve in $M$ through $x_0$, it follows that $L(x_0)$ is positive semi-definite on $T_{x_0}M$.
+\end{proof}
+
+\begin{theorem}
+(Second order sufficient conditions for a local minimizer with equality constraints) Consider functions $f, h_1, \dots, h_k$ which are $C^2$ on the open $\Omega \subseteq \R^n$. Suppose $x_0$ is a regular point of the constraints given by $h_1(x) = \cdots = h_k(x) = 0$. Let $M = \bigcap h_i^{-1}(\{0\})$. Suppose there exist $\lambda_1, \dots, \lambda_k \in \R$ such that
+\begin{enumerate}
+\item
+\[
+\nabla f(x_0) + \sum \lambda_i \nabla h_i(x_0) = 0
+\]
+
+\item
+The Lagrangian
+\[
+L(x_0) = \nabla^2 f(x_0) + \sum \lambda_i \nabla^2 h_i(x_0)
+\]
+is positive definite on $T_{x_0}M$.
+\end{enumerate}
+Then $x_0$ is a strict local minimizer of $f$ on $M$.
+\end{theorem}
+\begin{proof}
+Recall that if $L(x_0)$ is positive definite on $T_{x_0}M$, then there is an $a > 0$ such that $v \cdot L(x_0)v \geq a\|v\|^2$ for all $v \in T_{x_0}M$. (This is very easily proven by diagonalizing the matrix.) Let $x(s)$ be a smooth curve in $M$ such that $x(0) = x_0$, and normalize the curve so that $\|x'(0)\| = 1$. We have
+which becomes
+\begin{align*}
+f(x(s)) - f(x(0)) &= s \left. \frac{d}{ds} \right|_{s=0} f(x(s)) + \frac{1}{2} s^2 \left. \frac{d^2}{ds^2} \right|_{s=0} f(x(s)) + o(s^2) \\
+&= s \left. \frac{d}{ds} \right|_{s=0} \left[ f(x(s)) + \sum \lambda_i h_i(x(s)) \right]+ \frac{1}{2} s^2 \left. \frac{d^2}{ds^2} \right|_{s=0} \left[ f(x(s)) + \sum \lambda_i h_i(x(s)) \right] + o(s^2) \\
+&= s \underbrace{[ \nabla f(x_0) + \sum \lambda_i \nabla h_i(x_0) ]}_{=0 \text{ by 1.}} \cdot x'(0) + \frac{1}{2} s^2x'(0) \cdot L(x_0) x'(0)  \\
+&\qquad\qquad\qquad\qquad\qquad + \frac{1}{2} s^2\underbrace{[ \nabla f(x_0) + \sum \lambda_i \nabla h_i(x_0) ]}_{=0 \text{ by 1.}} \cdot x''(0) + o(s^2) \\
+&= \frac{1}{2} s^2 x'(0)^T L(x_0) x'(0) + o(s^2) \\
+&\geq \frac{1}{2}s^2 a\|x'(0)\|^2 + o(s^2) \\
+&= \frac{1}{2}s^2 a + o(s^2) \\
+&= s^2 \left( \frac{1}{2}a + \frac{o(s^2)}{s^2} \right)
+\end{align*}
+For sufficiently small $s$, the above is positive, so $f(x(s)) > f(x_0)$ for all sufficiently small $s$. Since $x(s)$ was arbitrary, $x_0$ is a strict local minimizer of $f$ on $M$.
+\end{proof}
+
+\subsection{Examples}
+
+\begin{enumerate}
+\item
+Recall the box example: maximizing the volume of a box of sides $x,y,z\geq 0$ subject to a fixed surface area $A > 0$. We were really minimizing the negative of the volume. We got $(x_0,y_0,z_0) = (l,l,l)$, where $l = \sqrt{A/6}$. Our Lagrange multiplier was $\lambda = \frac{A}{8(x_0+y_0+z_0)} = \frac{A}{24 l} > 0$. We had (after some calculation)
+\[
+L(x_0,y_0,z_0) = (2\lambda - l)\begin{pmatrix}
+0&1&1 \\
+1&0&1 \\
+1&1&0
+\end{pmatrix}.
+\]
+Here, $2\lambda - l < 0$. We have 
+\[
+T_{(x_0,y_0,z_0)}M = \mathrm{span}( \nabla h(x_0,y_0,z_0) )^\perp = \{ (u,v,w) \in \R^3 : u+v+w=0 \},
+\]
+since $\nabla h(x_0,y_0,z_0) = (4l,4l,4l)$. If $(u,v,w) \in T_{(x_0,y_0,z_0)}M$ is nonzero,
+\begin{align*}
+\begin{pmatrix}
+u&v&w
+\end{pmatrix}(2\lambda - l)\begin{pmatrix}
+0&1&1 \\
+1&0&1 \\
+1&1&0
+\end{pmatrix} \begin{pmatrix}
+u\\v\\w
+\end{pmatrix} &= \begin{pmatrix}
+u&v&w
+\end{pmatrix}(2\lambda - l) \begin{pmatrix}
+v+w \\ u+w \\ u+v
+\end{pmatrix} \\
+&= (2\lambda - l)\begin{pmatrix}
+u&v&w
+\end{pmatrix} \begin{pmatrix}
+-u \\ -v \\ -w
+\end{pmatrix} \\
+&= -(2\lambda - l)(u^2+v^2+w^2) > 0,
+\end{align*}
+so by the SOSC under equality constraints, our point $(x_0,y_0,z_0)$ is a strict local maximizer of the volume. In fact, it is a strict global minimum (which is yet to be seen).
+
+\item
+Consider the problem
+\begin{align*}
+\text{minimize } &f(x,y) = x^2-y^2 \\
+\text{subject to } &h(x,y) = y = 0.
+\end{align*}
+Then
+\[
+\nabla f(x,y) + \lambda \nabla h(x,y) = \begin{pmatrix}
+2x \\ -2y
+\end{pmatrix} + \lambda \begin{pmatrix}
+0 \\ 1
+\end{pmatrix} = \begin{pmatrix}
+0 \\ 0
+\end{pmatrix},
+\]
+implying that $\lambda = 0$ and that $(x,y) = (0,0)$ is our candidate local minimizer. Since $\nabla h(x,y) \neq (0,0)$, the candidate is a regular point. We have
+\[
+L(0,0) = \begin{pmatrix}
+2 & 0 \\ 0 & -2
+\end{pmatrix} + 0 \begin{pmatrix}
+0 & 0 \\ 0 & 0
+\end{pmatrix} = \begin{pmatrix}
+2 & 0 \\ 0 & -2
+\end{pmatrix},
+\]
+which is not positive semi-definite \emph{everywhere}. What about on the tangent space $T_{(0,0)}(\text{$x$-axis})=(\text{$x$-axis})$? Clearly it is positive definite on the $x$-axis, so by the SOSC that we just proved, $(0,0)$ is a strict local minimizer of $f$ on the $x$-axis. Thinking of level sets, this is intuitively true.
+
+\item
+Consider the problem
+\begin{align*}
+\text{minimize } &f(x,y) = (x-a)^2 + (y-b)^2 \\
+\text{subject to } &h(x,y) = x^2+y^2-1=0.
+\end{align*}
+Let us assume that $(a,b)$ satisfies $a^2+b^2>1$. We have $\nabla h(x,y) = (2x,2y)$, which is non-zero on $S^1$, implying that every point of $S^1$ is a regular point. Lagrange tells us that
+\[
+\begin{pmatrix}
+2(x-a) \\ 2(y-b)
+\end{pmatrix} + \lambda
+\begin{pmatrix}
+2x \\ 2y
+\end{pmatrix} = \begin{pmatrix}
+0\\0
+\end{pmatrix},
+\]
+as well as $x^2+y^2=1$. This may be written
+\begin{align*}
+(1+\lambda)x &= a \\
+(1+\lambda)y &= b \\
+x^2+y^2 &= 1
+\end{align*}
+By our assumption that $a^2+b^2>1$, we have $\lambda \neq -1$. Therefore
+\[
+\begin{pmatrix}
+x \\ y
+\end{pmatrix} = \frac{1}{1+\lambda}\begin{pmatrix}
+a \\ b
+\end{pmatrix},
+\]
+which implies that
+\[
+\frac{1}{1+\lambda} = \frac{1}{\sqrt{a^2+b^2}}
+\]
+by the third equation. Therefore
+\[
+\begin{pmatrix}
+x_0 \\ y_0
+\end{pmatrix} = \frac{1}{\sqrt{a^2+b^2}}\begin{pmatrix}
+a \\ b
+\end{pmatrix}.
+\]
+Thinking of level sets, this is intuitively true. The Lagrangian is
+\[
+L(x_0,y_0) = \begin{pmatrix}
+2 & 0 \\ 0 & 2
+\end{pmatrix} + \lambda \begin{pmatrix}
+2 & 0 \\ 0 & 2
+\end{pmatrix} = \underbrace{(1+\lambda)}_{>0}\begin{pmatrix}
+2 & 0 \\ 0 & 2
+\end{pmatrix},
+\]
+which, by the SOSC that we proved, proves that $(x_0, y_0)$ is a strict local minimizer of $f$ on $S^1$. In fact, this point is a global minimizer of $f$ on $S^1$, which follows immediately by the fact that $f$ necessarily takes on a global minimum on $S^1$ and that it only takes on the point $(x_0,y_0)$.
+
+\item
+For a special case, we will derive the Lagrange multipliers equation. Suppose we are working with $C^1$ functions $f,h$. Our problem is
+\begin{align*}
+\text{minimize } &f(x,y,z) \\
+\text{subject to } &g(x,y,z) = z-h(x,y) = 0.
+\end{align*}
+That is, we are minimizing $f(x,y,z)$ on the graph $\Gamma_h$ of $h$. The Lagrange equation tells us that
+\[
+\nabla f(x,y,z) + \lambda g(x,y,z) = \begin{pmatrix}
+\frac{\pd f}{\pd x}(x,y,z) \\ \frac{\pd f}{\pd y}(x,y,z) \\ \frac{\pd f}{\pd z}(x,y,z)
+\end{pmatrix} + \lambda \begin{pmatrix}
+-\frac{\pd h}{\pd x}(x,y,z) \\ -\frac{\pd y}{\pd x}(x,y,z) \\ 1
+\end{pmatrix} = \begin{pmatrix}
+0 \\ 0 \\ 0
+\end{pmatrix}.
+\]
+
+We will derive the above formula by expressing it as an unconstrained minimization problem
+\[ 
+\text{minimize }_{(x,y) \in \R^2} F(x,y)
+\]
+for some function $F$. We will then find the first order necessary conditions for an unconstrained minimization, and then express it as the equation we would like to prove.
+
+Define $F(x,y) = f(x,y,f(x,y))$. The constrained minimization problem is therefore equivalent to the unconstrained problem. By our theory of unconstrained minimization, $\nabla F(x_0,y_0)=(0,0)$. That is,
+\[
+\nabla F(x_0,y_0) = \begin{pmatrix}
+\frac{\pd f}{\pd x} + \frac{\pd f}{\pd z}\frac{\pd h}{\pd x} \\
+\frac{\pd f}{\pd y} + \frac{\pd f}{\pd z}\frac{\pd h}{\pd y}
+\end{pmatrix} = \begin{pmatrix}
+0\\0
+\end{pmatrix}.
+\]
+Rather,
+\begin{align*}
+\frac{\pd f}{\pd x} + \frac{\pd f}{\pd z}\frac{\pd h}{\pd x} &= 0 \\
+\frac{\pd f}{\pd y} + \frac{\pd f}{\pd z}\frac{\pd h}{\pd y} &= 0
+\end{align*}
+Let $\lambda = -\frac{\pd f}{\pd z}$. The equation becomes
+\begin{align*}
+\frac{\pd f}{\pd x} - \lambda \frac{\pd h}{\pd x} &= 0 \\
+\frac{\pd f}{\pd y} - \lambda \frac{\pd h}{\pd y} &= 0 \\
+\frac{\pd f}{\pd z} + \lambda &= 0
+\end{align*}
+which is what we wanted.
+\end{enumerate}
+
+\newpage
+
+\section{Optimization under Inequality Constraints (June 4)}
+
+\subsection{Kuhn-Tucker Conditions}
+
+Our problem is of the form
+\begin{align*}
+\text{minimize } &f(x) \\
+\text{subject to } &h_1(x) = \cdots = h_k(x) = 0 \\
+&g_1(x), \dots, g_l(x) \leq 0.
+\end{align*}
+\begin{definition}
+Let $x_0$ satisfy the above constraints. We call the inequality constraint $g_i(x) \leq 0$ active at $x_0$ if $g_i(x_0) = 0$. Otherwise, it is inactive at $x_0$.
+\end{definition}
+Since we are only studying local properties of functions, we will only be concerned with active constraints.
+
+\begin{definition}
+Suppose there is an index $l' \leq l$ such that $g_1(x_0) =, \dots, g_{l'}(x_0) = 0$ are active, and $g_{l'+1}(x_0) \leq 0, \dots, g_l(x_0) \leq 0$ are inactive. We say that $x_0$ is a regular point of these constraints if the vectors $\nabla h_1(x_0), \dots, \nabla h_k(x_0), \nabla g_1(x_0), \dots, \nabla g_{l'}(x_0)$ are linearly independent.
+\end{definition}
+\begin{theorem}
+(First order necessary conditions for minimizers under inequality constraints) Let $\Omega \subseteq \R^n$ be open and consider $C^1$ functions $f, h_1, \dots, h_k, g_1, \dots, g_l$ on $\Omega$. Suppose $x_0$ is a local minimizer of $f$ subject to the constraints, and that $x_0$ is regular as defined above. Then 
+\begin{enumerate}[(i)]
+\item There exist $\lambda_1, \dots, \lambda_k \in \R$ and $\mu_1, \dots, \mu_l \in \R^{\geq 0}$ such that 
+\[
+\nabla f(x_0) + \sum \lambda_i \nabla h_i(x_0) + \sum \mu_j \nabla g_j(x_0) = 0.
+\]
+\item ("Complementary slackness conditions") For all $j$, $\mu_j g_j(x_0) = 0$, or equivalently, $\sum \mu_j g_j(x_0) = 0$.
+\end{enumerate}
+\end{theorem}
+These conditions are also known as the \emph{Kuhn-Tucker conditions}.
+
+Suppose the active constraints at $x_0$ are the first $l'$ constraints. Since each $\mu_j \geq 0$, condition (ii) is equivalent to saying that if $j \geq l'+1$, then $\mu_j = 0$. 
+
+\begin{proof}
+If $x_0$ is a local minimizer of $f$ subject to the constraints, then it is certainly a local minimizer of $f$ subject to only the active constraints. That is, $x_0$ is also a local minimizer of $f$ subject to the equality constraints
+\[
+h_1(x) = \cdots = h_k(x) = g_1(x) = \cdots = g_{l'} = 0.
+\]
+We know how to work with this! Let $M$ be the surface defined by these equality constraints. By the Lagrange multipliers theorem, 
+\[
+\nabla f(x_0) + \sum \lambda_i \nabla h_i(x_0) + \sum \mu_j \nabla g_j(x_0) = 0,
+\]
+for some $\lambda_i \in \R, \mu_j \in \R$. (Note that we have not yet shown that the $\mu_j$'s are non-negative.)
+
+Note that $g_1(x_0) = \cdots = g_{l'}(x_0) = 0$. Therefore $\mu_{l'+1} = \cdots = \mu_l = 0$, so it follows that
+\[
+\mu_1 g_1(x_0) = 0, \dots, \mu_{l'}g_{l'}(x_0) = 0,
+\]
+which implies that $\mu_j g_j(x_0) = 0$ for all $j$. We have proven condition (ii).
+
+We must now verify the non-negativity of the $\mu_j$'s. Suppose for the sake of contradiction that some $\mu_j < 0$; WLOG assume $j=1$. Let
+\[
+\tilde{M} = \{x \in \Omega : h_i(x) = 0, g_i(x) = 0, j \neq 1\}.
+\]
+Since $x_0$ is a regular point of $M$, $x_0$ is a regular point of $\tilde{M}$. Therefore
+\[
+T_{x_0}\tilde{M} = \mathrm{span}(\{\nabla h_1(x_0), \dots, h_k(x_0), \nabla g_2(x_0), \dots, \nabla g_l(x_0)\})^\perp.
+\]
+The vector $\nabla g_1(x_0)$ does not lie in this span, so there is a $v \in T_{x_0}\tilde{M}$ such that $\nabla g_1(x_0) \cdot v < 0$. That is, $g_1$ is strictly decreasing in the direction of $v$, or in more precise language, $g_1(x_0 + sv) < g_1(x_0)$ for all sufficiently small $s$, as we have
+\[
+\left. \frac{d}{ds} \right|_{s=0} g_1(x_0 + sv) = \nabla g_1(x_0) \cdot v < 0. 
+\]
+Therefore $v$ is a feasible direction for $g_1(x) \leq 0$ at $x_0$, and also, $v$ is tangential to the other constraints. Since $x_0$ is a regular point of $\tilde{M}$, we may find a curve $x(s)$ on $\tilde{M}$ such that $x(0) = x_0$ and $x'(0) = v$. Also, $s = 0$ is a local minimizer of $f \circ x$, so
+\[
+\left. \frac{d}{ds}\right|_{s=0} f(x(s)) = \nabla f(x_0) \cdot v \geq 0.
+\]
+On the other hand, 
+\[
+\nabla f(x_0) + \sum \lambda_i \nabla h_i(x_0) + \mu_1 \nabla g_1(x_0)+\sum_{j=2}^{l'} \mu_j \nabla g_j(x_0) = 0.
+\]
+Taking the dot product of the above equation by $v$ kills the two sums above and gives
+\[
+\nabla f(x_0)\cdot v  + \mu_1 \nabla g_1(x_0)\cdot v = 0,
+\]
+implying $\nabla f(x_0)\cdot v < 0$, a contradiction. So every $\mu_j \geq 0$.
+\end{proof}
+
+\newpage
+
+\section{More on Inequality Constraints (June 9)}
+
+As before, we are working on an open $\Omega \subseteq \R^n$, and we want to optimize $f$ subject to $h_1, \dots, h_k = 0$ and $g_1, \dots, g_l \leq 0$. The smoothness of our functions varies.
+
+\subsection{Second Order Conditions}
+
+One might guess that the second order conditions under inequality constraints will be the same thing as before. However, the tangent space on which we evaluate the positive-definiteness of the Lagrangian is slightly different (in a very obvious way).
+
+\begin{theorem}
+Suppose $f, h_1, \dots, h_k, g_1, \dots, g_k \in C^2(\Omega)$, where $\Omega \subseteq \R^n$. Suppose $x_0$ is a regular point of the constraints. If $x_0$ is a local minimizer of $f$ subject to the constraints, then
+\begin{enumerate}[(i)]
+\item
+There are $\lambda_1, \dots, \lambda_k \in \R$ and $\mu_1, \dots, \mu_l \geq 0$ such that
+\[
+\nabla f(x_0) + \sum_i \lambda_i \nabla h_i(x_0) + \sum_j \mu_j \nabla g_j(x_0) = 0,
+\]
+and $\mu_j g_j(x_0) = 0$ for each $j$.
+
+\item
+The matrix
+\[
+L(x_0) = \nabla^2 f(x_0) + \sum_i \lambda_i \nabla^2 h_i(x_0) + \sum_j \mu_j \nabla^2 g_j(x_0)
+\]
+is positive semi-definite on the tangent space $T_{x_0}\tilde{M}$ to the active constraints at $x_0$. (Explicitly, $L(x_0)$ is positive semi-definite on the space
+\[
+T_{x_0}\tilde{M} = \{v \in \R^n : \nabla h_i(x_0) \cdot v = 0 \text{ for all $i$, and } \nabla g_j(x_0) \cdot v = 0 \text{ for all $1 \leq j \leq l'$}\},
+\]
+where the active $g$ constraints are indexed precisely by $1, \dots, l'$.)
+\end{enumerate}
+\end{theorem}
+\begin{proof}
+$x_0$ is a local minimizer of $f$ subject to the constraints, so it is also a local minimizer of $f$ subject to only the active constraints. Since the Lagrange multiplies of the inactive constraints are zero, our theory of equality-constrained minimization finishes the problem.
+\end{proof}
+
+\begin{enumerate}
+\item
+Consider, for example, the problem
+\begin{align*}
+\text{minimize } &f(x,y) := -x \\
+\text{subject to } &g_1(x,y) := x^2+y^2 \leq 1 \\
+&g_2(x,y) := y+x-1 \leq 0
+\end{align*}
+The feasible set is the closed unit ball $\overline{B_1(0)}$ with an open semicircle removed from the top right. Geometrically, it is clear that the minimizer should be the point $(1,0)$. It is not hard to check that every feasible point is regular. Let's check that $(x_0, y_0) = (1,0)$ satisfies the first order conditions. We look at
+\[
+\nabla f (x_0, y_0) + \mu_1 \nabla g_1 (x_0, y_0) + \mu_2 \nabla g_2 (x_0, y_0) = (0,0).
+\]
+This becomes
+\[
+\begin{pmatrix}
+-1 \\ 0
+\end{pmatrix} + \mu_1 \begin{pmatrix}
+2 \\ 0
+\end{pmatrix} + \mu_2 \begin{pmatrix}
+1 \\ 1
+\end{pmatrix} = \begin{pmatrix}
+0 \\ 0
+\end{pmatrix}
+\]
+or
+\begin{align*}
+2\mu_1 + \mu_2 &= 1 \\
+\mu_2 &= 0.
+\end{align*}
+So $\mu_1 = 1/2$. Also, $g_1(1,0) = 1^2 + 0^2 - 1 = 0$ and $g_(1,0) = 0$ as well, so the complementary slackness conditions are satisfied. Therefore $(1,0)$ satisfies the Kuhn-Tucker conditions, and so it is a candidate local minimizer. What about the second order conditions?
+\[
+L(1,0) = \nabla^2 f (x_0, y_0) + \mu_1 \nabla^2 g_1 (x_0, y_0) + \mu_2 \nabla^2 g_2 (x_0, y_0),
+\]
+or
+\[
+L(1,0) = I.
+\]
+Clearly the second order necessary conditions are satisfied, but let's check the tangent space anyway. We have $\nabla g_1(1,0) = (2, 0)$ and $\nabla g_2(1,0) = (1,1)$; they are linearly independent, so the tangent space is a point. Therefore the second order necessary conditions are satisfied.
+
+\item
+Consider the problem
+\begin{align*}
+\text{minimize } &f(x,y) := 2x^2 + 2xy + y^2 - 10x - 10y \\
+\text{subject to } &g_1(x,y) = x^2+y^2-5 \leq 0 \\
+&g_2(x,y) := 3x+y-6 \leq 0
+\end{align*}
+The Kuhn-Tucker conditions are
+\[
+\begin{pmatrix}
+4x+2y-10 \\ 2x+2y-10
+\end{pmatrix} + \mu_1 \begin{pmatrix}
+2x \\ 2y
+\end{pmatrix} + \mu_2 \begin{pmatrix}
+3 \\ 1
+\end{pmatrix} = \begin{pmatrix}
+0 \\ 0
+\end{pmatrix}
+\]
+as well as $\mu_1, \mu_2 \geq 0$ and $\mu_1 (x^2+y^2-5) = 0$ and $\mu_2 (3x+y - 6) = 0$. We consider four cases:
+\begin{enumerate}[(i)]
+\item
+Suppose $g_1$ is inactive and $g_2$ is active. Then $\mu_1 = 0$. The equations become
+\begin{align*}
+4x + 2y - 10  + 3\mu_2 &= 0 \\
+2x + 2y - 10 + \mu_2 &= 0 \\
+\mu_2 (3x+y-6) &= 0
+\end{align*}
+Subtracting the second equation from the first gives $x =- \mu_2$. If $\mu_2 = 0$, then $x = 0$, which implies that $y = 6$ since the second constraint is active. We get the point $(0,6)$; but this does not satisfy the constraints. Therefore $\mu_2 \neq 0$. (After some work one can conclude that no such point here satisfies the constraints.) 
+
+\item
+Suppose $g_1$ is active and $g_2$ is inactive. Then
+\begin{align*}
+4x + 2y - 10 + 2\mu_1 x &= 0 \\
+2x + 2y - 10 + 2\mu_1 y &= 0 \\
+\mu_1(x^2+y^2-5) &= 0 \\
+\mu_1 &\geq 0
+\end{align*}
+The solution is $(1,2)$ and $\mu_1 = 1$. It is not hard to see that this point is regular. Therefore the point $(1,2)$ is a candidate. The Lagrangian is, after some work, 
+\[
+L(1,2) = \begin{pmatrix}
+6 & 2 \\ 2 & 4
+\end{pmatrix}.
+\]
+This matrix is clearly positive definite, so we conclude that the second order necessary (and, as we'll see later, sufficient) conditions are satisfied.
+
+\item
+Suppose $g_1$ and $g_2$ are active.
+
+\item
+And so on. (This problem was not completed during lecture.)
+\end{enumerate}
+\end{enumerate}
+
+\subsection{Second Order Sufficient Conditions}
+
+\begin{theorem}
+Suppose $f, h_1, \dots, h_k, g_1, \dots, g_k \in C^2(\Omega)$, where $\Omega \subseteq \R^n$ is open. Suppose that $x_0$ is feasible. If
+\begin{enumerate}
+\item
+There exist $\lambda_1, \dots, \lambda_k \in \R$ and $\mu_1, \dots, \mu_l \geq 0$ such that
+\[
+\nabla f(x_0) + \sum_i \lambda_i \nabla h_i(x_0) + \sum_j \mu_j \nabla g_j(x_0) = 0,
+\]
+
+\item
+$\mu_j g_j(x_0) = 0$ for each $j$.
+
+\item
+The matrix
+\[
+L(x_0) = \nabla^2 f(x_0) + \sum_i \lambda_i \nabla^2 h_i(x_0) + \sum_j \mu_j \nabla^2 g_j(x_0)
+\]
+is positive definite on the tangent space to the "strongly active constraints" at $x_0$. That is, it is positive definite on the space
+\[
+\tilde{\tilde{T_{x_0}}} = \{ v \in \R^n : \nabla h_i(x_0) = 0 \text{ for all $i$, and } \nabla g_j(x_0) = 0 \text{ for all $1 \leq k \leq l''$} \},
+\]
+where $\{1, \dots, l''\}$ is the set of all indices of active constraints whose Lagrange multipliers are positive.
+\end{enumerate}
+Then $x_0$ is a strict local minimizer of $f$ subject to the usual constraints.
+\end{theorem}
+\begin{proof}
+Will be given on Thursday. (Copypaste it here?)
+\end{proof}
+
+Let's consider some more examples.
+
+\begin{enumerate}
+\item
+Here's an example. Given $(a,b)$ with $a,b > 0$ and $a^2+b^2 > 1$. Consider the minimization problem:
+\begin{align*}
+\text{minimize } &f(x,y) := (x-a)^2 + (y-b)^2 \\
+\text{subject to } &g_1(x,y) := x^2+y^2-1 \leq 0
+\end{align*}
+Our intuition says that the minimizer should be $\left( \frac{a}{\sqrt{a^2+b^2}}, \frac{b}{\sqrt{a^2+b^2}} \right)$. We have $\nabla g(x,y) = (2x, 2y)$, so clearly all feasible points are regular. The Kuhn-Tucker conditions are
+\[
+\begin{pmatrix}
+2(x-a) \\ 2(y-a)
+\end{pmatrix} + \mu \begin{pmatrix}
+2x \\ 2y
+\end{pmatrix} = \begin{pmatrix}
+0 \\ 0
+\end{pmatrix}
+\]
+and $\mu g(x,y) = 0$. That is,
+\begin{align*}
+(1+\mu)x &= a \\
+(1+\mu)y &= b \\
+\mu (x^2+y^2 - 1) &= 0, \mu \geq 0
+\end{align*}
+Suppose $\mu = 0$. Then $x = a$ and $y = b$; since we assumed $a^2+b^2 > 1$, we would have that $(x,y)$ is not feasible. Therefore $\mu \neq 0$, and so $x^2+y^2 = 1$ by the third equation. Squaring the first two equations and adding them gives
+\[
+(1+\mu)^2 (x^2+y^2) = a^2+b^2,
+\]
+implying that $\mu = -1 + \sqrt{a^2+b^2}$ - we took the positive root because $\mu > 0$. This is actually positive, since $a^2+b^2 > 1$. Those first equations again give us
+\[
+\begin{pmatrix}
+x_0 \\ y_0
+\end{pmatrix} = \frac{1}{1+\mu} \begin{pmatrix}
+a \\ b
+\end{pmatrix} = \frac{1}{\sqrt{a^2+b^2}} \begin{pmatrix}
+a \\ b
+\end{pmatrix},
+\]
+as expected. What do the second order conditions tell us? The Lagrangian is
+\[
+L(x_0, y_0) = 2I + 2\mu I = 2(1+\mu)I = 2\sqrt{a^2+b^2} I,
+\]
+which is everywhere positive definite. Therefore the second-order sufficient conditions are satisfied. For practice, however, let's compute the tangent space to the "strongly active constraints". The only constraint is $g$; since $g$ is active and its Lagrange multiplier $\mu$ is positive, the constraint $g$ is strongly active at $(x_0, y_0)$. Therefore the tangent space we are interested in is the tangent space to $S^1$ at $(x_0, y_0)$: that space is $\{v \in \R^2 : av_1 + bv_2 = 0\}$.
+
+\item
+Consider the problem
+\begin{align*}
+\text{minimize } &f(x,y) := x^3 + y^2 \\
+\text{subject to } &g(x,y) := (x+1)^2 + y^2 - 1 \leq 0.
+\end{align*}
+We have $\nabla g(x,y) = (2(x+1), 2y)$, which makes it clear that every feasible point is regular. The Kuhn-Tucker conditions are
+\[
+\begin{pmatrix}
+3x^2 \\ 2y
+\end{pmatrix} + \mu \begin{pmatrix}
+2(x+1) \\ 2y
+\end{pmatrix} = \begin{pmatrix}
+0 \\ 0
+\end{pmatrix},
+\]
+with $\mu((x+1)^2 + y^2 - 1) = 0$ and $\mu \geq 0$.
+
+Consider $(x_0, y_0) = (0,0)$. The Kuhn-Tucker conditions imply $\mu = 0$. In particular, $g$ is active at $(0,0)$, but not strongly active there. The tangent space to the active constraint at $(0,0)$ is the y-axis. The Lagrangian at $(0,0)$ is
+\[
+L(0,0) = \begin{pmatrix}
+0 & 0 \\ 0 & 2
+\end{pmatrix},
+\]
+which is clearly positive definite on this tangent space. However, we cannot conclude anything, since the constraint $g$ is not strongly active. In fact, it is clear that $(0,0)$ is not a local minimizer: for $x<0$ sufficiently close to $0$, $f(x,0)$ is negative, yet it is $0$ at $(0,0)$.
+\end{enumerate}
+
+\newpage
+
+\section{Proof of the Second Order Sufficient Conditions (June 11)}
+
+\subsection{Second Order Sufficient Conditions}
+
+\begin{theorem}
+(Second order sufficient conditions for a minimizer under inequality constraints) Suppose $\Omega \subseteq \R^n$ is open and $f, h_1, \dots, h_k, g_1, \dots, g_l \in C^2(\Omega)$. Consider the minimization problem
+\begin{align*}
+\text{minimize } &f(x) \\
+\text{subject to } &h_1(x) = \cdots = h_k(x) = 0 \\
+&g_1(x) \leq 0, \dots, g_l(x) \leq 0
+\end{align*}
+Suppose $x_0$ is a feasible point of the constraints. If the following three conditions are satisfied:
+\begin{enumerate}
+\item
+There exist $\lambda_1, \dots, \lambda_k \in \R$ and $\mu_1, \dots, \mu_l \geq 0$ such that
+\[
+\nabla f(x_0) + \sum_i \lambda_i \nabla h_i(x_0) + \sum_j \mu_j \nabla g_j(x_0) = 0,
+\]
+
+\item
+$\mu_j g_j(x_0) = 0$ for each $j$.
+
+\item
+The matrix
+\[
+L(x_0) = \nabla^2 f(x_0) + \sum_i \lambda_i \nabla^2 h_i(x_0) + \sum_j \mu_j \nabla^2 g_j(x_0)
+\]
+is positive definite on the tangent space to the "strongly active constraints" at $x_0$. That is, it is positive definite on the space
+\[
+\tilde{\tilde{T_{x_0}}} = \{ v \in \R^n : \nabla h_i(x_0) = 0 \text{ for all $i$, and } \nabla g_j(x_0) = 0 \text{ for all $1 \leq k \leq l''$} \},
+\]
+where $\{1, \dots, l''\}$ is the set of all indices of active constraints whose Lagrange multipliers are positive.
+\end{enumerate}
+then $x_0$ is a strict local minimizer of $f$.
+\end{theorem}
+\begin{proof}
+Suppose $x_0$ is not a strict local minimizer of $f$. We claim that there then exists a unit vector $v \in \R^n$ such that
+\begin{enumerate}[(a)]
+\item $\nabla f(x_0) \cdot v \leq 0$.
+\item $\nabla h_i(x_0) \cdot v = 0$ for each $i = 1, \dots, k$.
+\item $\nabla g_j(x_0) \cdot v \leq 0$ for all the active constraints (hereafter labelled by $j = 1,\dots, l'$).
+\end{enumerate}
+Intuitively, (a) says that $f$ is non-increasing in the direction of $v \neq 0$, and (b) and (c) say that $v$ is a feasible direction. Let us prove the claim.
+
+Since $x_0$ is not a strict local minimizer, there exists a sequence $x_k$ of feasible points unequal to $x_0$ converging to $x_0$ such that $f(x_k) \leq f(x_0)$. Then $f(x_k) - f(x_0) \leq 0$ for each $k$. Let $v_k = \frac{x_k-x_0}{\|x_k-x_0\|}$, and let $s_k = \|x_k - x_0\|$. Then $x_k = x_0 + s_kv_k$, with which we may rewrite the inequality as $f(s_kv_k + x_0) - f(x_0) \leq 0$. Since each $v_k \in S^1$, we may assume that the sequence $v_k$ is convergent and that it converges to some $v \in S^1$. We claim that this vector $v$ has the three desired properties.
+
+By Taylor's theorem we have
+\begin{align*}
+0 \geq f(s_kv_k + x_0) - f(x_0) &= s_k \nabla f(x_0) \cdot v_k + o(s_k) \tag{A}\\
+0 = h_i(s_kv_k + x_0) - h_i(x_0) &= s_k \nabla h_i(x_0) \cdot v_k + o(s_k) \tag{B} \\
+0 \geq g_k(s_kv_k+x_0) - g_j(x_0) &= s_k \nabla g_j(x_0) \cdot v_k + o(s_k) \tag{C}
+\end{align*}
+(The last equation is $\leq 0$ because $g_j(x_0) = 0$.) Divide everything by $s_k$ and take the limit as $k \to \infty$. Then
+\begin{align*}
+0 &\geq \nabla f(x_0) \cdot v \tag{a}\\
+0 &= \nabla h_i(x_0) \cdot v \tag{b}\\
+0 &\geq \nabla g_j(x_0) \cdot v \tag{c},
+\end{align*}
+which proves the earlier claim.
+
+We now claim that equality actually holds in (c). Suppose for the sake of contradiction that there is some $1 \leq k \leq l'$ such that $\nabla g_j(x_0) \cdot v < 0$ for some $j$ for which $g_j$ is strongly active at $x_0$. By the first condition of the theorem,
+\[
+0 \geq \underbrace{\nabla f(x_0) \cdot v}_{\text{$\geq 0$ by (a)}} = -\underbrace{\sum \lambda_i \nabla h_i(x_0)\cdot v}_{\text{$=0$ by (b)}} \underbrace{- \sum \mu_j \nabla g_j(x_0)\cdot v}_{\text{$\geq 0$ by (c)}},
+\]
+and so the right hand side is strictly greater than zero, because we only considered strongly active constraints. This is a contradiction, so we conclude that $\nabla g_j(x_0) = 0$ for all $j$ such that $g_j$ is strongly active at $x_0$. Therefore $v \in \tilde{\tilde{T_{x_0}}}$.
+
+Again, by Taylor's theorem
+\begin{align*}
+0 \geq f(s_kv_k + x_0) - f(x_0) &= s_k \nabla f(x_0) \cdot v_k + \frac{1}{2}s_k^2 v_k^T \nabla^2 f(x_k) \cdot v_k + o(s_k^2) \\
+0 = h_i(s_kv_k + x_0) - h_i(x_0) &= s_k \nabla h_i(x_0) \cdot v_k + \frac{1}{2}s_k^2 v_k^T \nabla^2 h_i(x_k) \cdot v_k + o(s_k^2) \\
+0 \geq g_k(s_kv_k+x_0) - g_j(x_0) &= s_k \nabla g_j(x_0) \cdot v_k + \frac{1}{2}s_k^2 v_k^T \nabla^2 g_j(x_k) \cdot v_k + o(s_k^2) 
+\end{align*}
+Multiply the second line by $\lambda_i$ and the third by $\mu_j$ and add everything up to get
+\[
+0 \geq s_k \underbrace{\left[ \nabla f(x_0) + \sum \lambda_i \nabla h_i(x_0) + \sum \mu_j \nabla g_j(x_0) \right]}_{\text{$=0$ by condition 1}} v_k + \frac{s_k^2}{2} v_k^T \underbrace{\left[ \nabla^2 f(x_0) + \sum \lambda_i \nabla^2 h_i(x_0) + \sum \mu_j \nabla^2 g_j(x_0) \right]}_{= L(x_0)}v_k + o(s_k^2)
+\]
+Divide everything by $s_k^2$ to get
+\[
+0 \geq \frac{1}{2} v_k^T \left[ \nabla^2 f(x_0) + \sum \lambda_i \nabla^2 h_i(x_0) + \sum \mu_j \nabla^2 g_j(x_0) \right] \cdot v_k + \frac{o(s_k^2)}{s_k^2}
+\]
+Taking the limit $k \to \infty$ gives
+\[
+0 \leq v^T L(x_0) \cdot v,
+\]
+which violates condition 3 of the theorem. We have a contradiction, so we conclude that $x_0$ must be a strict local minimizer.
+\end{proof}
+
+\subsection{A Quick Example}
+
+Consider the example from last class:
+\begin{align*}
+\text{minimize } &f(x,y) = -x \\
+\text{subject to } &g_1(x,y) = x^2+y^2-1 \leq 0 \\
+&g_2(x,y) = y+x-1 \leq 0
+\end{align*}
+We found that $(1,0)$ was a good candidate: that it satisfied the necessary conditions. Recall that $\mu_1 = 1/2$, $g_1(1,0) = 0$ and $\mu_2 = 0$, $g_2(1,0) = 0$. Therefore the first constraint is strongly active. The Lagrangian is the identity matrix, so the second order sufficient conditions are satisfied. Therefore $(1,0)$ is a strict local minimizer of $f$.
+
+\newpage
+
+\section{Newton's Method and Steepest Descent (July 7)}
+
+\subsection{Motivation for Newton's Method}
+
+Consider a twice-differentiable function $f : I \to \R$ defined on an interval $I \subseteq \R$. We would like to find the minima of $f$. We shall do so by considering quadratic approximations of $f$. 
+
+Let us start at a point $x_0 \in I$. Consider 
+\[
+q(x) = f(x_0) + f'(x_0)(x - x_0) + \frac{1}{2}f''(x_0)(x-x_0)^2,
+\]
+the (best) quadratic approximation to $f$ at $x_0$. Note that $q(x_0) = f(x_0)$, $q'(x_0) = f'(x_0)$ and $q''(x_0) = f''(x_0)$. We will now find the local minimizer $x_1$ for the quadratic $q$. That is, we would like to find $x_1$ such that
+\[
+0 = q'(x_1) = f'(x_0) + f''(x_0)(x_1-x_0),
+\]
+implying that, so long as $f''(x_0) \neq 0$, 
+\[
+x_1 = x_0 - \frac{f'(x_0)}{f''(x_0)}.
+\]
+The idea of Newton's method is to iterate this procedure. (Consider the Newton's method for finding roots of functions; this is the same as finding the root of the derivative of the function.)
+
+\subsection{Newton's Method in One Dimension}
+
+Precisely, we pick a starting point $x_0 \in I$. Then we recursively define
+\[
+x_{n+1} = x_n - \frac{f'(x_n)}{f''(x_n)}.
+\]
+We hope that the sequence $x_n$ converges to a minimizer of $f$. For the sake of the rest of the lecture, let $g = f'$. With this notation we may write Newton's method as
+\begin{align*}
+x_0 &\in I \\
+x_{n+1} &= x_n - \frac{g(x_n)}{g'(x_n)}.
+\end{align*}
+
+\begin{theorem}
+(Convergence of Newton's Method) Let $g \in C^2(I)$ (i.e. $f \in C^3(I)$). Suppose there is an $x_* \in I$ satisfies $g(x_*) = 0$ and $g'(x_*) \neq 0$. If $x_0$ is sufficiently close to $x_*$, then the sequence $x_n$ generated by Newton's method converges to $x_*$.
+\end{theorem}
+\begin{proof}
+Since $g'(x_0) \neq 0$, there is, by continuity of $g'$, an $\alpha > 0$ such that
+\begin{enumerate}
+\item
+$|g'(x_1)| > \alpha$ for all $x_1$ in a neighbourhood of $x_0$, and
+\item
+$|g''(x_2)| < \frac{1}{\alpha}$ for all $x_2$ in the neighbourhood of $x_0$.
+\end{enumerate}
+The proof of the first claim is a simple continuity argument. The proof of the second claim follows from continuity of $g''$ and the extreme value theorem applied to this neighbourhood('s closure). (That is, we can choose an $\alpha$ to bound $|g'|$ from below, and then shrink it possibly to ensure $1/\alpha$ bounds $|g''|$ from above.)
+
+Since $g(x_*) = 0$, the formula of Newton's method now implies
+\[
+\tag{*}
+x_{n+1} - x_* = x_n - x_* - \frac{g(x_n) - g(x_*)}{g'(x_n)} = -\frac{g(x_n) - g(x_*) - g'(x_n)(x_n-x_*)}{g'(x_n)}.
+\]
+By the second order mean value theorem, there exists a $\xi$ sufficiently close to $x_*$ such that
+\[
+g(x_*) = g(x_n) + g'(x_n)(x_* - x_n) + \frac{1}{2}g''(\xi)(x_* - x_n)^2.
+\]
+Then (*) becomes
+\[
+x_{n+1} - x_* = \frac{1}{2}\frac{g''(\xi)}{g'(x_n)}(x_n - x_*)^2.
+\]
+The bounds on $g'$ and $g''$ we found at the start of the proof imply that
+\[
+\tag{**}
+|x_{n+1} - x_*| < \frac{1}{2\alpha^2} |x_n - x_*|^2.
+\]
+Let $\rho$ be the constant $\rho = \frac{1}{\alpha^2}|x_0 - x_*|$. Choose $x_0$ close enough to $x_*$ so that $\rho < 1$. Then (**) implies
+\[
+|x_1 - x_*| < \frac{1}{2\alpha^2}|x_0 - x_*||x_0 - x_*| = \rho |x_0 - x_*| < |x_0 - x_*|.
+\]
+Similarly, (**) gives
+\[
+|x_2 - x_*| < \frac{1}{2\alpha^2}|x_1 - x_*|^2 < \frac{1}{2\alpha^2}\rho^2 |x_0-x_*|^2 < \rho^2 |x_0 - x_*|.
+\]
+Continuing in the same way we obtain
+\[
+|x_n - x_*| < \rho^n |x_0 - x_*|,
+\]
+implying that Newton's method converges in our neighbourhood.
+\end{proof}
+
+\subsection{Newton's Method in Higher Dimensions}
+
+Consider a function $f : \Omega \to \R$ defined on an open set $\Omega \subseteq \R^n$. We choose a starting point $x_0 \in \Omega$, and recursively define
+\[
+x_{n+1} = x_n - \nabla^2 f(x_n)^{-1} \nabla f(x_n).
+\]
+For a general $f$, the algorithm requires that $\nabla^2 f(x_n)$ is invertible. The algorithm stops if $\nabla f(x_n) = 0$ at some point (that is, the sequence given by Newton's method becomes constant if $\nabla f(x_n) = 0$ for some $x_n$.) Our main result is
+\begin{theorem}
+(Convergence of Newton's Method) Suppose $f \in C^3(\Omega)$. Suppose also that there is an $x_* \in \Omega$ such that $\nabla f(x_*) = 0$ and $\nabla^2 f(x_*)$ is invertible. Then the sequence $x_n$ defined by
+\[
+x_{n+1} = x_n - \nabla^2 f(x_n)^{-1} \nabla f(x_n)
+\] 
+converges for all $x_0$ sufficiently close to $x_*$.
+\end{theorem}
+
+The goal of Newton's method was to find a minimizer of $f$, but it is possible for it to fail, for it only searches for \emph{critical points}, not necessarily extrema.
+
+\subsection{Things That May Go Wrong}
+
+It is possible for Newton's method to fail to converge even when $f$ has a unique global minimizer $x_*$ and the initial point $x_0$ can be taken arbitrarily close to $x_*$. Consider
+\[
+f(x) = \frac{2}{3}|x|^{3/2} = \begin{cases} 
+\frac{2}{3}x^{3/2} & x \geq 0 \\
+\frac{2}{3}(-x)^{3/2} & x \leq 0
+\end{cases}.
+\]
+This function is differentiable, and its derivative is
+\[
+f'(x) = \begin{cases} 
+x^{1/2} & x \geq 0 \\
+-(-x)^{1/2} & x \leq 0
+\end{cases}
+\]
+and its second derivative is
+\[
+f''(x) = \begin{cases} 
+\frac{1}{2}x^{-1/2} & x > 0 \\
+\frac{1}{2}(-x)^{-1/2} & x < 0 \\
+\text{N/A} & x = 0
+\end{cases},
+\]
+so $f \not\in C^3$ (it is not even $C^2$). Let $x_0 = \epsilon$. Then
+\[
+x_1 = \epsilon - \frac{f'(\epsilon)}{f''(\epsilon)} = \epsilon - \frac{\epsilon^{1/2}}{\frac{1}{2}\epsilon^{-1/2}} = \epsilon - 2\epsilon = -\epsilon,
+\]
+and
+\[
+x_2 = -\epsilon - \frac{f'(-\epsilon)}{f''(-\epsilon)} = -\epsilon - \frac{-\epsilon^{1/2}}{\frac{1}{2}\epsilon^{-1/2}} = -\epsilon + 2\epsilon = \epsilon.
+\]
+So Newton's method gives an alternating sequence $\epsilon, -\epsilon, \epsilon, -\epsilon, \dots$.  This definitely does not converge. This does not contradict the theorem of convergence because the function in question does not satisfy the conditions of the theorem.
+
+Now we consider an example in which the function in question converges, just not to a minimizer. Consider $f(x) = x^3$, which has derivatives $f'(x) = 3x^2$ and $f''(x) = 6x$. Starting at $x_0$, we have
+\[
+x_{n+1} = x_n - \frac{f'(x_n)}{f''(x_n)} = x_n - \frac{3x_n^2}{6x_n} = x_n - \frac{1}{2}x_n = \frac{1}{2}x_n.
+\]
+So Newton's method definitely converges to the critical point $0$, no matter the choice of $x_0 \in \R$. However, the function $f$ in question does not have a global minimizer, so, while Newton's method converges, it does not converge to an extrema of any sorts.
+
+\subsection{Motivation for Steepest Descent}
+
+Consider a $C^1$ function $f : \Omega \to \R$ defined on an open set $\Omega \subseteq \R^n$. The idea is: at every point in the "landscape" of $f$ (the graph of $f$ in $\R^{n+1}$), make a step "downwards" in the steepest direction. (If you're on a mountain and want to descend to the bottom as fast as possible, how do you do so? You, at your current position, take a step down in the steepest direction, and repeat until you're done.) 
+
+Since the gradient $\nabla f(x_0)$ represents the direction of greatest increase of $f$ at $x_0$, the vector $-\nabla f(x_0)$ represents the direction of steepest decrease at $x_0$. We would therefore like to move in the direction of the negative gradient. We will do so, with the condition that we move until we have a minimizer in the direction of the negative gradient (at which point we will stop moving and repeat).
+
+\subsection{Steepest Descent}
+
+Here is the steepest descent algorithm:
+\begin{align*}
+x_0 &\in \Omega \\
+x_{k+1} &= x_k - \alpha_k \nabla f(x_k)
+\end{align*}
+where $\alpha_k \geq 0$ satisfies 
+\[
+f(x_k - \alpha_k \nabla f(x_k)) = \min_{\alpha \geq 0} f(x_k - \alpha \nabla f(x_k)).
+\]
+We call $\alpha_k$ the \emph{optimal step}, since it is chosen so that $x_{k+1}$ is the minimum of $f$ sufficiently close to $x_k$. We also call $x_{k+1}$ the \emph{minimum point on the half-line} $x_k - \alpha \nabla f(x_k), \alpha \geq 0$. We now describe some properties of the method of steepest descent.
+
+\begin{theorem}
+The steepest descent algorithm is actually descending; $f(x_{k+1}) < f(x_k)$ so long as $\nabla f(x_k) \neq 0$.
+\end{theorem}
+\begin{proof}
+We have
+\[
+f(x_{k+1}) = f(x_k - \alpha_k \nabla f(x_k)) \leq f(x_k - s \nabla f(x_k))
+\]
+for all $s \in [0, \alpha_k]$. Also,
+\[
+\left. \frac{d}{ds} \right|_{s=0} f(x_k - s\nabla f(x_k)) = \nabla f(x_k) \cdot (-\nabla f(x_k)) = -\| \nabla f(x_k) \|^2 < 0.
+\]
+Then for sufficiently small $s \geq 0$,
+\[
+f(x_k - s\nabla f(x_k)) < f(x_k),
+\]
+proving the claim.
+\end{proof}
+
+\begin{theorem}
+The steepest descent algorithm moves in perpendicular steps; for all $k$, we have $(x_{k+2} - x_{k+1})\cdot(x_{k+1} - x_k) = 0$.
+\end{theorem}
+\begin{proof}
+We have
+\[
+(x_{k+2} - x_{k+1})\cdot(x_{k+1} - x_k) = \alpha_{k+1}\alpha_k \nabla f(x_{k+1}) \cdot \nabla f(x_k).
+\]
+Recall that $\alpha_k \geq 0$. If $\alpha_k = 0$, then the whole expression is zero and we're done. Consider the possibility that $\alpha_k > 0$. Then
+\[
+f(x_k - \alpha_k \nabla f(x_k)) = \min_{s > 0} f(x_k - s \nabla f(x_k)),
+\]
+implying that $\alpha_k$ is a minimizer of the function on the right in the above. Then
+\[
+0 = \left. \frac{d}{ds} \right|_{s=\alpha_k} f(x_k - s\nabla f(x_k)) = \nabla f(x_k - \alpha_k \nabla f(x_k)) \cdot (-\nabla f(x_k)) = -\nabla f(x_{k+1}) \cdot \nabla f(x_k),
+\]
+proving the claim.
+\end{proof}
+
+The fact that the steepest descent algorithm moves in perpendicular steps implies that the method may converge very slowly. Consider the example of a quadratic function $f(x) = x^TQx$ in $\R^2$ for $Q$ positive definite, and its elliptical level sets. 
+
+\newpage
+
+\section{More on Steepest Descent (July 9)}
+
+\subsection{Convergence of Steepest Descent}
+
+\begin{theorem}
+Suppose $f$ is a $C^1$ function on an open set $\Omega \subseteq \R^n$. Let $x_0 \in \Omega$, and let $\{x_k\}_{k=0}^\infty$ be the sequence generated by the method of steepest descent. If there is a compact $K \subseteq \Omega$ containing all $x_k$, then every convergent subsequence of $\{x_k\}_{k=0}^\infty$ in $K$ will converge to a critical point $x_*$ of $f$.
+\end{theorem}
+\begin{proof}
+Choose a convergent subsequence $\{x_{k_i}\}$ converging to a point $x_* \in K$.  Note that $\{ f(x_{k_i}) \}$ decreases and converges to $f(x_*)$. Since $\{f(x_k)\}$ is a decreasing sequence, it also converges to $f(x_*)$.
+
+Suppose for the sake of contradiction that $\nabla f(x_*) \neq 0$. Since $f$ is $C^1$, $\nabla f(x_{k_i})$ converges to $\nabla f(x_*)$. Define $y_{k_i} = x_{k_i} - \alpha_{k_i} \nabla f(x_{k_i})$ (i.e. $y_{k_i} = x_{k_1+1}$). We may therefore assume without loss of generality that $y_{k_i}$ converges to some $y_* \in K$. Since $\nabla f(x_*) \neq 0$, we may write
+\[
+\alpha_{k_i} = \frac{|y_{k_i} - x_{k_i}|}{|\nabla f(x_{k_i})|}.
+\]
+Taking the limit as $i \to \infty$, we have
+\[
+\alpha_* := \lim_{i \to \infty} \alpha_{k_i} = \frac{|y_* - x_*|}{|\nabla f(x_*)|}
+\]
+Taking the same limit in the definition of $y_{k_i}$ we have
+\[
+y_* = x_* - \alpha_* \nabla f(x_*).
+\]
+
+Note that
+\[
+f(y_{k_i}) = f(x_{k_i+1}) = \min_{\alpha \geq 0} f(x_{k_i} - \alpha \nabla f(x_{k_i})).
+\]
+Thus $f(y_{k_i}) \leq f(x_{k_i} - \alpha \nabla f(x_{k_i}))$ for all $\alpha \geq 0$. For any fixed $\alpha \geq 0$, taking the limit $i \to \infty$ gives us
+\[
+f(y_*) \leq f(x_* - \alpha \nabla f(x_*)),
+\]
+implying
+\[
+f(y_*) \leq \min_{\alpha \geq 0} f(x_* - \alpha \nabla f(x_*)) < f(x_*),
+\]
+since the function $f$ decreases in the direction of $-\nabla f(x_*) \neq 0$.
+
+We can also argue the following: $f(x_{k_i+1}) \to f(x_*)$. But since $x_{k_i+1} = y_{k_i}$, we have $f(y_{k_i}) \to f(y_*)$, implying $f(x_*) = f(y_*)$, a contradiction.
+\end{proof}
+
+\subsection{Steepest Descent in the Quadratic Case}
+
+Consider a function $f$ of the form $f(x) = \frac{1}{2}x^TQx - b^Tx$ for $b,x \in \R^n$ and $Q$ an $n \times n$ symmetric positive definite matrix. Let $\lambda = \lambda_1 \leq \cdots \leq \lambda_n = \Lambda$ be the eigenvalues of $Q$. (Note that they are all strictly positive.) Note that $\nabla^2 f(x) = Q$ for any $x$, so $f$ is strictly convex. There therefore exists a unique global minimizer $x_*$ of $f$ in $\R^n$ such that $Qx_* = b$. 
+
+Let 
+\[
+q(x) = \frac{1}{2}(x - x_*)^TQ(x-x_*) = f(x) + \frac{1}{2}x_*^TQx_*.
+\]
+So $q$ and $f$ differ by a constant. Therefore it suffices to find the minimizer of $q$, rather than $f$. Note that $q(x) \geq 0$ for all $x$, since $Q$ is positive definite. So we shall study the minimizer $x_*$ of $q$.
+
+Note that $\nabla f(x) = \nabla q(x) = Qx - b$; let $g(x) = Qx - b$. The method of steepest descent may therefore be written as
+\[
+x_{k+1} = x_k - \alpha_k g(x_k).
+\]
+We would like a formula for the optimal step $\alpha_k$. Recall that $\alpha_k$ is defined to be the minimizer of the function $f(x_k - \alpha g(x_k))$ over $\alpha \geq 0$. Thus
+\[
+0 = \left. \frac{d}{d\alpha} \right|_{\alpha = \alpha_k} f(x_k - \alpha g(x_k)) = \nabla f(x_k - \alpha_k g(x_k)) \cdot (-g(x_k)).
+\]
+This simplifies to
+\[
+0 = (Q(x_k - \alpha_k g(x_k)) - b) \cdot (-g(x_k)) = -(\underbrace{Qx_k - b}_{=g(x_k)} - \alpha_k Q g(x_k)) \cdot g(x_k)
+\]
+giving
+\[
+0 = -|g(x_k)|^2 + \alpha_k g(x_k)^TQg(x_k).
+\]
+Therefore
+\[
+\tag{*}
+\alpha_k = \frac{|g(x_k)|^2}{g(x_k)^TQg(x_k)}.
+\]
+\begin{theorem}
+\[
+q(x_{k+1}) = \left( 1 - \frac{|g(x_k)|^4}{(g(x_k)^T Q g(x_k))(g(x_k)^TQ^{-1}g(x_k))} \right)q(x_k)
+\]
+\end{theorem}
+\begin{proof}
+\begin{align*}
+q(x_{k+1}) &= q(x_k - \alpha_k g(x_k)) \\
+&= \frac{1}{2}(x_k - \alpha_k g(x_k) - x_*)^T Q (x_k - \alpha_k g(x_k) - x_*) \\
+&= \frac{1}{2}(x_k - x_* - \alpha_k g(x_k))^T Q (x_k - x_* - \alpha_k g(x_k)) \\
+&= \frac{1}{2}(x_k - x_*)^T Q (x_k - x_*) - \alpha_k g(x_k)^TQ(x_k - x_*) + \frac{1}{2} \alpha_k^2 g(x_k)^T Q g(x_k) \\
+&= q(x_k) - \alpha_k g(x_k)^TQ(x_k - x_*) + \frac{1}{2} \alpha_k^2 g(x_k)^T Q g(x_k),
+\end{align*}
+implying
+\[
+q(x_k) - q(x_{k+1}) = \alpha_k g(x_k)^TQ(x_k - x_*) - \frac{1}{2} \alpha_k^2 g(x_k)^T Q g(x_k).
+\]
+Dividing by $q(x_k)$ gives
+\[
+\frac{q(x_k) - q(x_{k+1})}{q(x_k)} = \frac{\alpha_k g(x_k)^TQ(x_k - x_*) - \frac{1}{2} \alpha_k^2 g(x_k)^T Q g(x_k)}{\frac{1}{2}(x_k - x_*)^T Q (x_k - x_*)}.
+\]
+Let $g_k = g(x_k)$ and $y_k - x_k - x_*$. Then
+\[
+\frac{q(x_k) - q(x_{k+1})}{q(x_k)} = \frac{\alpha_k g_k^T Q y_k - \frac{1}{2} \alpha_k^2 g_k^T Q g_k}{\frac{1}{2} y_k^T Q y_k}.
+\]
+Note that $g_k = Qx_k - b = Q(x - x_*) = Qy_k$, so $y_k = Q^{-1}g_k$. The above formula therefore simplifies to
+\[
+\frac{q(x_k) - q(x_{k+1})}{q(x_k)} = \frac{2 \alpha_k |g_k|^2 - \alpha_k^2 g_k^TQg_k}{g_k^T Q^{-1} g_k}.
+\]
+Now recall the formula
+\[
+\tag{*}
+\alpha_k = \frac{|g_k|^2}{g_k^TQg_k}.
+\]
+This implies that
+\[
+\frac{q(x_k) - q(x_{k+1})}{q(x_k)} = \frac{2 \frac{|g_k|^4}{g_k^T Q g_k} - \frac{|g_k|^4}{g_k^T Q g_k}}{g_k^T Q^{-1}g_k} = \frac{|g_k|^4}{(g_k^T Q g_k)(g_K^T Q^{-1} g_k)},
+\]
+proving the theorem.
+\end{proof}
+
+\newpage
+
+\section{Steepest Descent Convergence, Conjugate Directions (July 14)}
+
+\subsection{Recap}
+
+Consider $f(x) = \frac{1}{2}x^TQx - b^Tx$, where $Q$ is positive definite symmetric, and has eigenvalues $\lambda = \lambda_1 \leq \cdots \leq \lambda_n = \Lambda$. Since $Q$ is positive definite, there is a unique minimizer $x_*$ such that $Qx_* = b$. Let $g(x) = \nabla f(x) = Qx - b$. We may as well minimize $q(x) = \frac{1}{2}(x-x_*)^TQ(x-x_*) = f(x) + \mathrm{const}$. Moreover, $q$ is always positive except at $x = x_*$, so $q$ is nicer to work with. Note that $\nabla q(x) = \nabla f(x) = g(x) = Qx - b$. Denote by $g_k$ the point $g(x_k) = Qx_k - b$. Then, if $x_k$ is generated by steepest descent, we derived the expression
+\[
+q(x_{k+1}) = \left( 1 - \frac{|g_k|^4}{(g_k^TQg_k)(g_k^TQ^{-1}g_k)} \right)q(x_k).
+\]
+We may use this to study the rate of convergence of gradient descent.
+
+\subsection{Rate of Convergence of Steepest Descent} 
+
+If $v = g_k$, then the term in the brackets may be written
+\[
+1 - \frac{|v|^4}{(v^TQv)(v^TQ^{-1}v)}.
+\]
+\emph{Kantorovich's inequality} says that if $Q$ is an $n \times n$ positive definite symmetric matrix with eigenvalues $\lambda = \lambda_1 \leq \cdots \leq \lambda_n = \Lambda$, then
+\[
+\frac{|v|^4}{(v^T Q v)(v^T Q^{-1} v)} \geq \frac{4\lambda\Lambda}{(\lambda+\Lambda)^2} \qquad \text{ for all } v \in \R^n.
+\]
+Thus
+\[
+q(x_{k+1}) = \left( 1 - \frac{|v|^4}{(v^TQv)(v^TQ^{-1}v)} \right)q(x_k) \leq \left( 1 - \frac{4\lambda\Lambda}{(\lambda+\Lambda)^2} \right) q(x_k),
+\]
+which simplifies to, after some work,
+\[
+q(x_{k+1}) \leq \underbrace{\frac{(\lambda - \Lambda)^2}{(\lambda + \Lambda)^2}}_{r} q(x_k).
+\]
+Then $0 \leq r < 1$. We shall call the constant $r$ the \emph{rate of convergence}. We state some properties of steepest descent in the quadratic case. The only thing we have to prove in the following theorem is that steepest descent converges.
+
+\begin{theorem}
+(Steepest descent, quadratic case) For $x_0 \in \R^n$, the method of steepest descent starting at $x_0$ converges to the unique minimizer $x_*$ of the function $f$, and we have $q(x_{k+1}) \leq r q(x_k)$.
+\end{theorem}
+\begin{proof}
+We know that $q(x_{k+1}) \leq r^k q(x_0)$. Since $0 \leq r < 1$, when $k \to \infty$, $r^k \to 0$. Note that
+\[
+x_k \in \{ x \in \R^n : q(x) \leq r^k q(x_0) \}.
+\]
+This set is a sublevel set of $q$. The sublevel sets of $q$ look like concentric filled-in ellipses centred at $x_*$, and as $k \to \infty$, they seem to "shrink" into $x_*$. Therefore steepest descent converges in the quadratic case.
+\end{proof}
+
+Note that
+\[
+r = \frac{(\Lambda - \lambda)^2}{(\Lambda - \lambda)^2} = \frac{( \Lambda / \lambda - 1 )^2}{(\Lambda / \lambda - 1)^2},
+\]
+so $r$ depends only on the ratio $\Lambda / \lambda$. This number is called the \emph{condition number of $Q$}. (The condition number may be defined as $\|Q\|\|Q^{-1}\|$ in the operator norm on matrices; it is not hard to see that these numbers agree in our case.) 
+
+If the condition number $\Lambda / \lambda \gg 1$ (large), then convergence is very slow. If $\Lambda / \lambda = 1$, then $r = 0$, and so convergence is achieved in one step.
+
+\subsection{Method of Conjugate Directions}
+
+We will develop a new method for finding the minimizers of quadratic functions $\frac{1}{2}x^TQx - b^Tx$.
+
+\begin{definition}
+Let $Q$ be symmetric. We say that $d,d'$ are $Q$-conjugate or $Q$-orthogonal if $d^TQd' = 0$. A finite set $d_0, \dots, d_k$ of vectors is called $Q$-orthogonal if $d_i^TQd_j = 0$ for all $i \geq j$.
+\end{definition}
+
+For example, if $Q = I$, then $Q$-orthogonality is equivalent to regular orthogonality. For another example, if $Q$ has more than one distinct eigenvalue, let $d$ and $d'$ be eigenvectors corresponding to distinct eigenvalues. Then $d^TQd' = \lambda' d^Td' = 0$, since the distinct eigenspaces of a symmetric matrix are orthogonal subspaces.
+
+Recall that any symmetric matrix $Q$ may the orthogonally diagonalized; there exists an orthonormal basis $d_0, \dots, d_{n-1}$ of eigenvectors of $Q$. These eigenvectors are also $Q$-orthogonal. Hence to any symmetric matrix is a basis of orthonormal vectors that are also orthogonal with respect to the matrix, as just defined.
+
+\begin{theorem}
+If $Q$ is symmetric and positive definite, then any set of non-zero $Q$-orthogonal vectors $\{d_i\}$ is linearly independent.
+\end{theorem}
+\begin{proof}
+If $\sum \alpha_i d_i = 0$, then left-multiplying by $d_j^TQ$ gives $\alpha_j d_j^T Q d_j = 0$. Positive definiteness implies $\alpha_j = 0$. 
+\end{proof}
+
+Let $Q$ be an $n \times n$ symmetric positive definite matrix. Recall that $f(x) = \frac{1}{2}x^TQx - b^Tx$ has the unique global minimizer $x_* = Q^{-1}b$. Let $d_0, \dots, d_{n-1}$ be non-zero $Q$-orthogonal vectors. Then $d_0, \dots, d_{n-1}$ form a basis of $\R^n$. Thus there are scalars $\alpha_0, \dots, \alpha_{n-1}$ such that $x_* = \sum \alpha_i d_i$. We would like a formula for the $\alpha_i$'s.
+
+Multiplying both sides of the sum $x_* = \sum \alpha_i d_i$ by $d_j^TQ$ implies that $d_j^TQx_* = \alpha_j d_j^TQd_j$, implying that
+\[
+\alpha_j = \frac{d_j^T b}{d_j^TQd_j}.
+\]
+Therefore
+\[
+x_* = \sum_{i=1}^{n-1} \frac{d_i^Tb}{d_i^TQd_i}  d_i.
+\]
+This implies that we can actually solve for $x_*$ by computing the $d_0, \dots, d_{n-1}$ and the coefficients above. Computationally, computing inner products is very easy. The disadvantage is that we do not know how to find the vectors $d_0, \dots, d_{n-1}$.
+
+%what the hell is this
+\begin{theorem}
+(Method of Conjugate Directions)
+Let $d_0, \dots, d_{n-1}$ be a set of non-zero $Q$-orthogonal vectors. For a starting point $x_0 \in \R^n$, consider the sequence $\{x_l\}$ defined by 
+\[
+x_{k+1} = x_k + \alpha_k d_k,
+\]
+where
+\[
+\alpha_k = -\frac{g_k^Td_k}{d_k^TQd_k} \qquad \text{ where } g_k = Qx_k - b.
+\]
+The sequence $\{x_k\}$ converges to the minimizer $x_*$ it at most $n$ steps; $x_n = x_*$.
+\end{theorem}
+\begin{proof}
+Write $x_* - x_0 = \alpha_0' d_0 + \cdots + \alpha_{n-1}'d_{n-1}$. Multiply both sides by $d_i^TQ$ to get
+\[
+d_i^TQ(x_* - x_0) = \alpha_i d_i^TQd_i,
+\]
+giving us the expression
+\[
+\tag{*}
+\alpha_i' = \frac{d_i^TQ(x_*-x_0)}{d_i^TQd_i}.
+\]
+Note that
+\begin{align*}
+x_1 &= x_0 + \alpha_0 d_0 \\
+x_2 &= x_0 + \alpha_0 d_0 + \alpha_1 d_1 \\
+&\vdots \\
+x_k &= x_0 + \alpha_0 d_0 + \cdots + \alpha_{k-1}d_{k-1},
+\end{align*}
+implying that
+\[
+x_k - x_0 = \alpha_0 d_0 + \cdots + \alpha_{k-1}d_{k-1}.
+\]
+Multiplying both sides by $d_k^TQ$ gives $d_k^TQ(x_k-x_0) = 0$. By (*) we have
+\[
+\alpha_k' = \frac{d_k^T Q(x_* - x_0) - d_k^TQ(x_k - x_0)}{d_k^TQd_k} = \frac{d_k^TQ(x_* - x_k)}{d_k^TQd_k} = -\frac{(Qx_k - Qx_*)^T d_k}{d_k^TQd_k}
+\]
+simplifying to
+\[
+\alpha_k' = -\frac{g_k^T d_k}{d_k^TQd_k} = \alpha_k.
+\]
+So
+\[
+x_* = x_0 + \alpha_0 d_0 + \cdots + \alpha_{n-1}d_{n-1} = x_n.
+\]
+So after $n$ steps, we reach the minimizer.
+\end{proof}
+\textbf{(There may be an error in the above calculations. The professor will send a note on this.)}
+
+\subsection{Geometric Interpretation of Conjugate Directions}
+
+Let $d_0, \dots, d_{n-1}$ be a set of non-zero $Q$-orthogonal vectors in $\R^n$. Let $B_k$ be the span of the first $k$ of these vectors. Note that $B_k$ has dimension $k$ and contains $B_1, \dots, B_{k-1}$, so $B_1, \dots, B_n$ is a sequence of expanding subspaces of $\R^n$. Let us agree that $B_0 = \{0\}$.
+
+Fix $x_0 \in \R^n$ and consider the affine subspaces $x_0 + B_k$ each with "origin" $x_0$. We now have a sequence of expanding affine subspaces of $\R^n$.
+
+\begin{theorem}
+The sequence $\{x_k\}$ generated from $x_0$ by the method of conjugate directions has the property that $x_k$ is the minimizer of $f(x) = \frac{1}{2}x^TQx - b^Tx$ on the affine subspace $x_0 + B_k$.
+\end{theorem}
+
+\newpage
+
+\section{More on Conjugate Directions (July 16)}
+
+\subsection{Geometric Interpretation}
+
+Let $d_0, \dots, d_{n-1}$ be a set of non-zero $Q$-orthogonal vectors in $\R^n$, where $Q$ is symmetric and positive definite. Note that these vectors are linearly independent by a result from last lecture. Let $B_k$ denote the subspace spanned by the first $k$ vectors. We have an increasing sequence
+\[
+B_0 \subsetneq B_1 \subsetneq \cdots \subsetneq B_n,
+\]
+and $\dim(B_k) = k$.
+
+\begin{theorem}
+The sequence $\{x_k\}_{k=0}^\infty$ generated from $x_0$ by the method of conjugate directions has the property that $x_k$ minimizes $f(x) = \frac{1}{2}x^TQx - b^Tx$ on the affine subspace $x_0 + B_k$.
+\end{theorem}
+
+Recall the function $q(x) = \frac{1}{2}(x-x_*)^TQ(x-x_*)$, which differs from $f(x)$ by a constant. They have the same minimizers.
+
+If $Q = I$, then $q(x) = \frac{1}{2}|x-x_*|^2$. Then $x_k \in x_0 + B_k$ is the closest point in $x_0 + B_k$ to $x_*$, by the theorem.
+
+Before proving the theorem, recall the following result about convex functions.
+
+\begin{lemma}
+Let $f$ be a $C^1$ convex function defined on a convex domain $\Omega \subseteq \R^n$. Suppose there is an $x_* \in \Omega$ such that $\nabla f(x_*) \cdot (y - x_*) \geq 0$ for all $y \in \Omega$. Then $x_*$ is a global minimizer of $f$ on $\Omega$. The converse is obviously true.
+\end{lemma}
+
+Geometrically, this means that if we move in any feasible direction from the point $x_*$, the function is increasing. Hence $x_*$ is a local minimizer; convexity implies it is global. With this result in mind, we prove the theorem.
+
+\begin{proof}
+The affine subspace $\Omega = x_0 + B_k$ is convex. \textbf{(This proof could not be finished as attention had to be diverted from the lecture.)}
+\end{proof}
+
+\begin{corollary}
+$x_n$ minimizes $f(x)$ on $\R^n$. That is, $x_n = x_*$; the method of conjugate directions for this function $f$ terminates in at most $n$ steps. 
+\end{corollary}
+
+When $Q = I$, then $q(x)$ is half the distance squared from $x$ to $x_*$. What if $Q \neq I$. $q$ is still a metric on $\R^n$. Thus $x_k$ is the point "closest" to $x_*$ on the affine subspace $x_0 + B_k$. \textbf{(These notes are incomplete.)}
+
+\newpage
+
+\section{Conjugate Gradients, Introduction to The Calculus of Variations (July 21)}
+
+\subsection{Conjugate Gradient Method}
+
+Assume all of the conditions of the previous class.
+
+We will describe a new optimization algorithm that is a type of conjugate direction method. Start at $x_0 \in \R^n$. Choose $d_0 = -g_0 = -\nabla f(x_0) = b - Qx_0$. Recursively define $d_{k+1} = -g_{k+1} + \beta_k d_k$, where $g_{k+1} = Qx_{k+1} - b$ and
+\[
+\beta_k = \frac{g_{k+1}^T Q d_k}{d_k^TQd_k}
+\]
+and
+\[
+x_{k+1} = x_k + \alpha_k d_k,
+\]
+where
+\[
+\alpha_k = -\frac{g_k^T d_k}{d_k^T Q d_k}.
+\]
+
+Given an initial point $x_0$, take $d_0 = -g_0 = b - Qx_0$. By definition, $x_1 = x_0 + \alpha_0 d_0$; we need to find $\alpha_0$. This is
+\[
+\alpha_0 = -\frac{g_0^Td_0}{g_0^TQg_0}.
+\]
+Then $x_2 = x_1 + \alpha_1 d_1$. By definition, $\alpha_1 = -\frac{g_1^T d_1}{d_1^TQd_1}$, where $d_1 = -g_1 + \beta_0 d_0$, where $\beta_0 = \frac{g_1^TQd_0}{d_0^TQd_0}$.
+
+Some remarks:
+\begin{enumerate}
+\item
+Like the other conjugate direction methods, this method converges to the minimizer $x_*$ in $n$ steps.
+\item
+We have a procedure to find the direction vectors $d_k$.
+\item
+This method makes good \emph{uniform} progress towards the solution at every step.
+\end{enumerate}
+
+\subsection{Bounds on Convergence}
+
+As before, consider $q(x) = \frac{1}{2}(x-x_*)^TQ(x-x_*) = f(x) + \text{const}$. It's better to look at $q$ rather than $f$, since $q$ behaves like a distance function relative to $x_*$. (More on this in HW7.)
+
+\begin{theorem}
+\[
+q(x_{k+1}) \leq \left( \max_{\substack{\lambda \\ \text{eigval of Q}}} (1 + \lambda P_k(\lambda))^2 \right) q(x_k),
+\]
+where $P_k$ is any polynomial of degree $k$.
+\end{theorem}
+\begin{proof}
+In the textbook; will not be proven in class.
+\end{proof}
+
+For example, suppose $Q$ has $m \leq n$ distinct eigenvalues. Choose a polynomial $P_{m-1}$ such that $1 + \lambda P_{m-1}(\lambda)$ has its $m$ zeroes at the $m$ eigenvalues of $Q$. With such a polynomial, we would get $q(x_m) \leq 0$, implying that $q(x_m) = 0$; the conjugate gradient method terminates at the $m$th step, i.e. $x_m=x_*$.
+
+\subsection{Introducing The Calculus of Variations}
+
+Consider the problem
+\begin{align*}
+\text{minimize } &F[u] \\
+&u \in \mathcal{A},
+\end{align*}
+where $\mathcal{A}$ is a set of functions. Here, $F$ is a function of functions, often called a \emph{functional}. This is the general unconstrained calculus of variations problem.
+
+For example, consider
+\[
+\mathcal{A} = \{ u \in C^1([0, 1], \R) : u(0) = u(1) = 1  \}.
+\]
+Define $F : \mathcal{A} \to \R$ by
+\[
+F[u(\cdot)] \coloneqq \frac{1}{2} \int_0^1 (u(x)^2 + u'(x)^2) \, dx.
+\]
+To solve the minimization problem
+\begin{align*}
+\text{minimize } &F[u] \\
+&u \in \mathcal{A}
+\end{align*}
+is to find a $u^* \in \mathcal{A}$ such that $F[u^*] \leq F[u]$ for all $u \in \mathcal{A}$. To do so, we will
+\begin{enumerate}
+\item
+We will derive first order necessary conditions for a minimizer.
+\item
+We will find a function satisfying these conditions.
+\item
+We will check that this function is indeed a minimizer. (This is not always possible.)
+\end{enumerate}
+(Consider the obvious parallels with finite dimensional optimization.)
+
+Fix $v \in C^1([0,1],\R)$ with $v(0) = v(1) = 0$. Suppose $u^*$ is a minimizer of $F$ on $\mathcal{A}$. Clearly $u^* + sv \in \mathcal{A}$ for all $s \in \R$. Define $f : \R \to \R$ by $f(s) \coloneqq F[u^* + sv]$. Then $f(s) \geq f(0)$ for all $s$, since $u^*$ is a minimizer of $F$. Then $0$ is a minimizer of $f$, implying $f'(0) = 0$. How do we actually compute $f'(0)$? Since
+\begin{align*}
+f(s) &= \frac{1}{2} \int_0^1 (u^*(x) + sv(x))^2 + (u^{*'}(x) + sv'(x))^2 \, dx \\
+&= \frac{1}{2} \int_0^1 (u^*(x)^2 + u^{*'}(x)^2) \, dx + s\int_0^1 ( u^*(x)v(x) + u^{*'}(x)v'(x) ) \, dx + \frac{s^2}{2} \int_0^1 (v(x)^2 + v'(x)^2) \, dx,
+\end{align*}
+implying that
+\[
+f'(s) = \int_0^1 ( u^*(x)v(x) + u^{*'}(x)v'(x) ) \, dx + s\int_0^1 (v(x)^2 + v'(x)^2) \, dx,
+\]
+or
+\[
+\tag{*}
+0 = \int_0^1 ( u^*(x)v(x) + u^{*'}(x)v'(x) ) \, dx \text{ for all } v \in C^1([0,1], \R) \text{ such that } v(0)=v(1)=0.
+\]
+The above equality holds for all $v \in C^1([0,1], \R)$ such that $v(0)=v(1)=0$. This is a \emph{primitive} form of the first order necessary conditions.
+
+Let us call the functions $v$ described in (*) the \emph{test functions on $[0,1]$}. We would like to write (*) in a more useful way. Let us make the simplifying assumption that $u^*$ is $C^2$. Integration by parts gives
+\[
+\int_0^1 u^{*'}(x)v'(x) \, dx = \cancel{\left. u^{*'}(x)v(x) \right|_0^1} - \int_0^1 u^{*''}(x) v(x) \, dx = \int_0^1 u^{*''}(x) v(x) \, dx.
+\]
+By substituting this into (*) we obtain
+\[
+\int_0^1 (u^*(x)v(x) - u^{*''}(x)v(x))\, dx = 0.
+\]
+Factor the common $v$ out to get
+\[
+\int_0^1 (u^*(x) - u^{*''}(x))v(x) \, dx = 0 \text{ for all test functions } v \text{ on } [0,1].
+\]
+So we have a continuous function $u^*(x) - u^{*''}(x)$ that is zero whenever "integrated against test functions". We claim that any function satisfying this condition must be zero. This result or its variations is called the \emph{fundamental lemma of the calculus of variations}. We shall show that $u^* = u^{*''}$ on $[0,1]$; this gives us the first order necessary conditions we wanted in the first place.
+
+\begin{theorem}
+(Fundamental lemma of the calculus of variations) Suppose $g \in C^0([a,b])$. If
+\[
+\int_a^b g(x)v(x) \, dx = 0
+\]
+for all test functions $v$ on $[a,b]$, then $g \equiv 0$ on $[a,b]$.
+\end{theorem}
+
+So the first order necessary condition we derived are that $u^* = u^{*''}$ on $[0,1]$, as well as $u^*(0) = u^*(1) = 1$. By MAT267, $u^*(x) = c_1e^x + c_2e^{-x}$ for some constants $c_1, c_2 \in \R$. Some work gives $c_1 = \frac{1}{e+1}$ and $c_2 = \frac{e}{e + 1}$. Therefore
+\[
+u^*(x) = \frac{1}{e+1}e^x + \frac{e}{e+1}e^{-x}
+\]
+is the only $C^1$ minimizer candidate.
+
+We must finally check that $u^*$ is indeed a minimizer. Some work shows that $F[u^* + sv] \geq F[u^*]$ for all $s \in \R$ and all test functions $v$ on $[0,1]$. Choose $u \in \mathcal{A}$. Let $v = u-u^*$; this is a test function on $[0,1]$, so $F[u] \geq F[u^*]$, showing that $u^*$ is, in fact, the global minimizer.
+
+\end{document}
