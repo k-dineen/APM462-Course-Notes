@@ -1,0 +1,119 @@
+\documentclass[11pt]{article}
+\usepackage[utf8]{inputenc}
+\usepackage{amsmath, amsthm, amssymb, amsfonts, mathtools, tikz-cd, float, cancel}
+\usepackage[left=2.5cm,right=2.5cm]{geometry}
+\usepackage[shortlabels]{enumitem}
+
+\newcommand{\Int}{\text{Int}}
+\newcommand{\R}{\mathbb{R}}
+\newcommand{\Z}{\mathbb{Z}}
+\newcommand{\pd}{\partial}
+\renewcommand{\epsilon}{\varepsilon}
+\renewcommand{\hat}{\widehat}
+\renewcommand{\tilde}{\widetilde}
+
+\newtheorem{theorem}{Theorem}[section]
+\newtheorem{corollary}{Corollary}[theorem]
+\newtheorem{lemma}[theorem]{Lemma}
+\newtheorem{proposition}{Proposition}
+
+\newtheorem{definition}{Definition}
+
+\pagestyle{myheadings}
+
+
+\begin{document}
+
+\section{The Brachistochrone Problem (July 23)}
+
+\subsection{Fundamental Lemma of the Calculus of Variations}
+
+Recall that $v$ is said to be a \emph{test function on $[a,b]$} if it is $C^1$ and $v(a) = v(b) = 0$.
+
+\begin{theorem}
+(Fundamental Lemma of the Calculus of Variations) If $g$ is a continuous function on $[a,b]$ with the property that
+\[
+\int_a^b g(x)v(x) \, dx = 0
+\]
+for all test functions $v$ on $[a,b]$, then $g \equiv 0$.
+\end{theorem}
+\begin{proof}
+Suppose $g\not\equiv 0$. Then there is an $x_0 \in (a,b)$ such that $g(x_0) \neq 0$. (We can ensure that $x_0$ is in the interior of the interval because of continuity.) Assume without loss of generality that $g(x_0) > 0$. There exists an open neighbourhood $(c,d)$ of $x_0$ inside $(a,b)$ on which $g$ is positive. Let $v$ be a $C^1$ function on $[a,b]$ such that $v > 0$ on $(c,d)$ and $v = 0$ otherwise. Then $v$ is a test function on $[a,b]$, so by the hypotheses,
+\[
+0 = \int_a^b g(x)v(x) \, dx = \int_c^d g(x)v(x) \, dx > 0,
+\]
+a contradiction.
+\end{proof}
+The test function $v$ we chose in the proof of the preceding theorem could be, for example,	
+\[
+v(x) = \begin{cases} 
+(x-c)^2(x-d)^2 & x \in [c,d] \\
+0 & \text{otherwise}
+\end{cases}.
+\]
+Then
+\[
+v(x) = \begin{cases} 
+2(x-c)(x-d)^2 + 2(x-c)^2(x-d) & x \in (c,d) \\
+0 & \text{otherwise}
+\end{cases},
+\]
+which is easily seen to be continuous. Therefore $v$ is a test function on $[a,b]$ which is positive only on $(c,d)$.
+
+\subsection{The Brachistochrone Problem}
+
+The brachistrochrone problem is the problem from which the calculus of variations was born. In approximately 1638, Galileo Galilei was studying the problem of a ball rolling along a slope from a point $A$ to a point $B$. Galileo experimented with multiple kinds of slopes, such as a straight line from $A$ to $B$, or some non-straight curve from $A$ to $B$, and so on. He measured the time it takes for the ball to roll. He first noticed that the straight line from $A$ to $B$ did \emph{not} minimize the time. He posed the following problem: 
+
+\emph{Find the curve connecting $A$ and $B$ on which a point mass moves without friction under the influence of gravity in the least time possible.}
+
+Around 1696, Johan Bernoulli posted this problem somewhere as a challenge to the mathematicians of the world.
+
+Let us pose the problem more mathematically. Let $c : [0, T] \to \R^2$ describe a curve (the graph of a function) that starts at $A$ at time $t = 0$ and ends at $B$ at time $t = T$. So if $c(t) = (x(t), y(t))$ satisfies $c(0) = A$ and $c(T) = B$. Assuming $y = u(x)$, we have $c(t) = (x(t), u(x(t)))$. Assume $A = (0, a)$ and $B = (b, 0)$.
+
+Now what is the velocity of the point mass along this curve?
+\[
+v(t) = \frac{d}{dt} c(t) = \begin{pmatrix}
+x'(t) \\ u'(x(t))x'(t)
+\end{pmatrix} = x'(t) \begin{pmatrix}
+1 \\ u'(x(t))
+\end{pmatrix}.
+\]
+The kinetic energy of the point mass is $K(t) = \frac{1}{2} m|v|^2 = \frac{m}{2}x'(t)^2 (1 + u'(x(t)))^2$, and the potential energy is $V(t) = mgy = mgu(x(t))$. The total energy is $E = K + P$. There is no friction, so energy is conserved, hence the total energy at any time is equal to the total energy at time $t = 0$: $E(t) = E(0)$ for all $t$. Written out, this means
+\[
+\frac{m}{2}x'(t)^2(1 + u'(x(t)))^2 + mgu(x(t)) = mga.
+\]
+Some algebra shows that this is equal to
+\[
+\frac{1}{2}x'(t)^2 = \frac{g(a - u(x(t)))}{1 + u'(x(t))^2}.
+\]
+Multiplying by $2$ and taking square roots gives
+\[
+x'(t) = \sqrt{\frac{2g(a - u(x(t)))}{1 + u'(x(t))^2}},
+\]
+a differential equation in $x$! What is the total time it takes the point mass to go from $A$ to $B$ along $c$? We have
+\[
+\tag{*}
+T = \int_0^T 1 \, dt = \int_0^T \sqrt{\frac{1 + u'(x(t))^2}{2g(a - u(x(t)))}}x'(t) \, dt.
+\]
+How does this give us anything we want? It appears that $T$ is on both sides, so that this reveals nothing about $T$.
+
+Let $f$ be some function, and consider the integral
+\[
+\tag{**}
+\int_{t_0}^{t_1} f(x(t))x'(t) \, dt = \int_{t_0}^{t_1} F'(x(t))x'(t) \, dt = F(x(t_1)) - F(x(t_0)) = \int_{x(t_0)}^{x(t_1)} f(x) \, dx,
+\]
+where $F$ is an antiderivative of $f$. 
+
+Now, (**) applied to (*) gives
+\[
+T = \int_{x(0)}^{x(1)} \sqrt{\frac{1 + u'(x)^2}{2g(a - u(x))}} \, dx =  \int_{0}^{b} \sqrt{\frac{1 + u'(x)^2}{2g(a - u(x))}} \, dx.
+\]
+With this, we may pose Galileo's original problem as a minimization problem: the \emph{brachistochrone problem in the calculus of variations}.
+\begin{align*}
+\text{minimize } &F[u] \coloneqq \int_{0}^{b} \sqrt{\frac{1 + u'(x)^2}{2g(a - u(x))}} \, dx \\
+& u \in \mathcal{A} \coloneqq \{ u \in C^1([0,b], \R) : u(0) = a, u(b) = 0 \}.
+\end{align*}
+This is a problem in the calculus of variations. Next time, we will find first order conditions for a minimizer and attempt to find a function $u_*$ satisfying these conditions.
+
+\end{document}
+ 
