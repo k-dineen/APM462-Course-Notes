@@ -1,0 +1,167 @@
+\documentclass[11pt]{article}
+\usepackage[utf8]{inputenc}
+\usepackage{amsmath, amsthm, amssymb, amsfonts, mathtools, tikz-cd, float, cancel}
+\usepackage[left=2.5cm,right=2.5cm]{geometry}
+\usepackage[shortlabels]{enumitem}
+
+\newcommand{\Int}{\text{Int}}
+\newcommand{\R}{\mathbb{R}}
+\newcommand{\Z}{\mathbb{Z}}
+\newcommand{\pd}{\partial}
+\renewcommand{\epsilon}{\varepsilon}
+\renewcommand{\hat}{\widehat}
+\renewcommand{\tilde}{\widetilde}
+
+\newtheorem{theorem}{Theorem}[section]
+\newtheorem{corollary}{Corollary}[theorem]
+\newtheorem{lemma}[theorem]{Lemma}
+\newtheorem{proposition}{Proposition}
+
+\newtheorem{definition}{Definition}
+
+\pagestyle{myheadings}
+
+
+\begin{document}
+
+\section{Necessary Conditions (July 28)}
+
+\subsection{Necessary Conditions, Brachistochrone Problem}
+
+For the brachistochrone problem, we derived the following mathematical formulation:
+\begin{align*}
+\text{minimize } & F[u] \coloneqq \int_0^b \left( \frac{1 + u'(x)^2}{2g(a-u(x))} \right)^{1/2} \, dx \\
+\text{subject to } &u \in \mathcal{A},
+\end{align*}
+where $\mathcal{A} = \{ v \in C^1([0,b]) : v(0) = a, v(b) = 0 \}$. We would like to find necessary conditions for a minimizer.
+
+Suppose $u_*$ is the minimizer of $F$ on $\mathcal{A}$. Fix a test function $v$ on $[0,b]$. Consider the function $u_* + sv$, for $s \in \R$. Clearly $u_* + sv \in \mathcal{A}$, which implies that $F[u_*] \leq F[u_* + sv]$ for all $s \in \R$ and all test functions $v$ on $[0, b]$. Define $f(s) \coloneqq F[u_* + sv]$; then $f$ is minimized at $s = 0$ and it's $C^1$, so we have $f'(0) = 0$, or
+\[
+\left. \frac{d}{ds} \right|_{s = 0} F[u_* + sv] = 0.
+\]
+We'd like to compute this derivative. This is deferred to a homework problem, which will require a result which we give later today. The answer is that $u_*$ satisfies
+\[
+\tag{*}
+(1 + u_*'(x)^2)(a - u_*(x))c^2 = 1 \qquad \text{ $c$ is some constant. }
+\]
+This is a differential equation. Note that $a > 0$ and $a > u_*(x)$. We claim (guess) that $u_*(x(t)) = a - l(1 - \cos(t))$. Some computations give
+\[
+u_*'(x(t))x'(t) = \frac{d}{dt} u_*(x(t)) = -k \sin(t),
+\]
+or
+\[
+u_*(x(t)) = -\frac{k\sin(t)}{x'(t)}.
+\]
+Substituting these into (*) gives
+\[
+c^2 k \left( 1 + \frac{k^2\sin^2(t)}{x'(t)^2} \right)(1 - \cos(t)) = 1.
+\]
+Choose $c$ so that $c^2k = 1/2$. Then
+\[
+\left( 1 + \frac{k^2\sin^2(t)}{x'(t)^2} \right)(1 - \cos(t)) = 2.
+\]
+Expansion of the left side results in
+\[
+\frac{k^2 \sin^2(t)}{x'(t)^2}(1 - \cos(t)) + (1 - \cos(t)) = 2.
+\]
+Move the second $1 - \cos(t)$ to the right to get
+\[
+\frac{k^2 \sin^2(t)}{x'(t)^2}(1 - \cos(t)) = 1 + \cos(t).
+\]
+Multiply both sides by $x'(t)^2$ to get
+\[
+k^2 \sin^2(t)(1 - \cos(t)) = x'(t)^2(1 + \cos(t)).
+\]
+Multiply both sides by $1 - \cos(t)$ to get
+\[
+k^2 \sin^2(t)(1 - \cos(t)) = x'(t)^2 \sin^2(t),
+\]
+and cancelling the $\sin^2(t)$'s gives
+\[
+k^2 (1 - \cos(t))^2 = x'(t)^2,
+\]
+and taking square roots gives
+\[
+x'(t) = k(1 - \cos(t)).
+\]
+Integration gives
+\[
+x(t) = kt - k\sin(t),
+\]
+where the constant of integration is $0$ since $x(0) = 0$. Therefore
+\[
+c(t) = \begin{pmatrix}
+x(t) \\ u_*(x(t))
+\end{pmatrix} = \begin{pmatrix}
+k(t - \sin(t)) \\
+a - k(1 - \cos(t))
+\end{pmatrix}
+\]
+is a candidate for a minimizer. By writing $c(T) = (b,0)$, we can solve to $T,k$.
+
+\subsection{First Order Necessary Conditions}
+
+Our general space of functions will be 
+\[
+\mathcal{A} \coloneqq \{ u \in C^1([a,b]) : u(a) = A, u(b) = B \},
+\]
+and the functionals to be minimized will be of the form
+\[
+F[u] \coloneqq \int_a^b L(x,u'(x), u'(x)) \, dx
+\]
+for some real-valued function $L = L(x,z,p)$ defined on $[a,b] \times \R^2$. We shall use subscripts to denote partial derivatives.
+
+\begin{definition}
+Given $u \in \mathcal{A}$, suppose there is a function $g : [a,b] \to \R$ such that
+\[
+\left. \frac{d}{ds} \right|_{s = 0} F[u + sv] = \int_a^b g(x) v(x) \, dx
+\]
+for all test functions $v$ on $[a,b]$. Then $g$ is called the variational derivative of $F$ at $u$. We denote the function $g$ by $\frac{\delta F}{\delta u}(u)$. (Why is this unique?)
+\end{definition}
+
+We can think of $\frac{\delta F}{\delta u}(u)$ as an analogue of the gradient. We have
+\[
+\left. \frac{d}{ds} \right|_{s = 0} F[u + sv] = \int_a^b \frac{\delta F}{\delta u}(u)(x) v(x) \, dx
+\]
+for all test functions $v$ on $[a,b]$. Compare this with the finite-dimensional formula
+\[
+\left. \frac{d}{ds} \right|_{s=0} f(u + sv) = \nabla f(u) \cdot v = \sum_{i=1}^n \nabla f(u)_i v_i;
+\]
+if one thinks of the integral as an "infinite sum of infinitesimally small pieces", then we can understand how the functional derivative might be an "infinite-dimensional" version of the gradient.
+
+We now work towards deriving the desired first order necessary conditions for a minimizer.
+
+\begin{proposition}
+Suppose $u_* \in \mathcal{A}$ satisfies $u_* + v \in \mathcal{A}$ for all test functions $v$ on $[a,b]$. Then if $u_*$ minimizes $F$ on $\mathcal{A}$ and if $\frac{\delta F}{\delta u}(u_*)$ exists and is continuous, then $\frac{\delta F}{\delta u}(u_*) \equiv 0$.
+\end{proposition}
+\begin{proof}
+This is an easy application of the fundamental lemma of the calculus of variations.
+\end{proof}
+
+We would like to find a formula for the variational derivative.
+
+\begin{theorem}
+Suppose $L,u$ are $C^2$ functions. Then $\frac{\delta F}{\delta u}(u)$ exists, is continuous, and
+\[
+\tag{**}
+\frac{\delta F}{\delta u}(u)(x) = -\frac{d}{dx} L_p(x,u(x), u'(x)) + L_z(x,u(x),u'(x)).
+\]
+\end{theorem}
+
+Equation (**) is known as the \emph{Euler-Lagrange equation}. Recall that $L = L(x,z,p)$.
+
+\begin{proof}
+Let $v$ be a test function on $[a,b]$. Then
+\begin{align*}
+\left. \frac{d}{ds} \right|_{s=0} F[u + sv] &= \left. \frac{d}{ds} \right|_{s=0} \int_a^b L(x, u(x) + sv(x), u'(x) + sv'(x)) \, dx \\
+&=  \int_a^b \left. \frac{d}{ds} \right|_{s=0} L(x, u(x) + sv(x), u'(x) + sv'(x)) \, dx \\
+&= \int_a^b \left( L_x(\cdots) \frac{dx}{ds} + L_z(\cdots)\frac{d}{ds}(u(x) + sv(x)) + L_p(\cdots)\frac{d}{ds}(u'(x) + sv'(x)) \right) \, dx \\
+&= \int_a^b \left( L_z(x,u(x),u'(x))v(x) + L_p(x,u(x),u'(x))v'(x) \right)\, dx \\
+&= \int_a^b L_z(x,u(x),u'(x))v(x) \, dx + \int_a^b L_p(x,u(x),u'(x))v'(x) \, dx \\
+&= \int_a^b \left( -\frac{d}{dx} L_p(x,u(x),u'(x)) + L_z(x,u(x),u'(x)) \right) v(x) \, dx \qquad \text{integration by parts.}
+\end{align*}
+Since $u$ and $L$ are $C^2$, the function in the integrand is continuous. By the definition of the variational derivative we have the desired result.
+\end{proof}
+
+\end{document}
+ 
