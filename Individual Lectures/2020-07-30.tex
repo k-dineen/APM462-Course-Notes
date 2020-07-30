@@ -1,0 +1,146 @@
+\documentclass[11pt]{article}
+\usepackage[utf8]{inputenc}
+\usepackage{amsmath, amsthm, amssymb, amsfonts, mathtools, tikz-cd, float, cancel}
+\usepackage[left=2.5cm,right=2.5cm]{geometry}
+\usepackage[shortlabels]{enumitem}
+
+\newcommand{\Int}{\text{Int}}
+\newcommand{\R}{\mathbb{R}}
+\newcommand{\Z}{\mathbb{Z}}
+\newcommand{\pd}{\partial}
+\renewcommand{\epsilon}{\varepsilon}
+\renewcommand{\hat}{\widehat}
+\renewcommand{\tilde}{\widetilde}
+
+\newtheorem{theorem}{Theorem}[section]
+\newtheorem{corollary}{Corollary}[theorem]
+\newtheorem{lemma}[theorem]{Lemma}
+\newtheorem{proposition}{Proposition}
+
+\newtheorem{definition}{Definition}
+
+\pagestyle{myheadings}
+
+
+\begin{document}
+
+\section{Examples of Using The Euler-Lagrange Equation (July 30)}
+
+\subsection{DuBois-Raymond Lemma}
+
+The next lemma allows us to relax the restrictions for the Euler-Lagrange equation to hold from twice continuously differentiable to only once continuously differentiable.
+\begin{lemma}
+(DuBois-Raymond lemma) Suppose $\alpha, \beta$ are continuous functions on $[a,b]$ such that
+\[
+\int_a^b ( \alpha(x)v(x) + \beta(x)v'(x) ) \, dx = 0
+\]
+for all test functions $v$ on $[a,b]$. Then $\beta$ is $C^1$, and $\beta' = \alpha$ on $[a,b]$.
+\end{lemma}
+\begin{proof}
+Let $A(x) = \int_a^x \alpha(t) \, dt$ be an antiderivative of $\alpha$. Since $\alpha$ is continuous, $A$ is $C^1$. Then
+\[
+\int_a^b \alpha(x) v(x) \, dx = \int_a^b A'(x)v(x) \, dx = -\int_a^b A(x)v'(x) \, dx.
+\]
+By the original assumption,
+\[
+0 = \int_a^b (\alpha(x)v(x) + \beta(x)v'(x)) \, dx = \int_a^b(-A(x) + \beta(x))v'(x) \, dx.
+\]
+We are done if we are able to show that $-A(x) + \beta(x)$ is constant on $[a,b]$. Let $\gamma = -A + \beta$. Define $C$ to be the constant
+\[
+C \coloneqq \frac{1}{b-a}\int_a^b \gamma(t) \, dt,
+\]
+so that $\int_a^b (\gamma(t) - C) \, dt = 0$. Define $v(x) \coloneqq \int_a^x (\gamma(t) - C) \, dt$. The function $v$ is $C^1$ since $\gamma(t) - C$ is continuous, and $v(a) = v(b) = 0$; so $v$ is a test function on $[a,b]$. By some algebra,
+\[
+\int_a^b (\gamma(x) - C)^2 \, dx = \int_a^b (\gamma(x) - C)v'(x) \, dx = 0.
+\]
+Since $(\gamma(x) - C)^2 \geq 0$ on $[a,b]$, we must have $\gamma(x) = C$. Therefore $\gamma$ is constant, which proves the lemma.
+\end{proof}
+
+\subsection{Examples}
+
+\begin{enumerate}
+\item
+Consider two points $(a,A), (b,B)$ in $\R^2$ with $a < b$. We seek a function $u$ on $[a,b]$ with $u(a) = A$, $u(b) = B$, and with
+\[
+F[u] \coloneqq \int_a^b \sqrt{1 + u'(x)^2} \, dx
+\]
+minimized. Denote by $\mathcal{A}$ the set of $C^1$ functions $u$ with $u(a) = A$ and $u(b) = B$. Suppose that $u_*$ is a minimizer. Then, by the previous lemma applied to the last result of the previous lecture, $u_*$ satisfies the Euler-Lagrange equation. Let $L(x,z,p) \coloneqq \sqrt{1 + p^2}$. Then $L_z = 0$, and
+\[
+L_p = \frac{p}{\sqrt{1 + p^2}}.
+\]
+The Euler-Lagrange equation is, in this case,
+\[
+\tag{*}
+0 = -\frac{d}{dx} L_p + L_z = -\frac{d}{dx} \frac{u_*'(x)}{\sqrt{1 + u_*'(x))^2}}.
+\]
+This implies that 
+\[
+u_*'(x) = C\sqrt{1 + u_*'(x)^2}
+\]
+for some constant $C$, implying
+\[
+u_*'(x)^2 = C(1 + u_*'(x)^2) = C + C u_*'(x)^2,
+\]
+giving
+\[
+u_*'(x)^2(1 - C) = C,
+\]
+hence $u_*'$ is constant, or $u_*(x) = \alpha x + \beta$ for some constants $\alpha, \beta$. As expected, the minimizer is a line. This answer is expected, since the shortest path joining two points is the line joining them.
+
+\item
+Suppose $u$ is a $C^1$ function on an interval $[a,b]$. Consider the surface of revolution obtained by rotating the graph of $u$ on $[a,b]$ about the $x$-axis. Consider the functional
+\[
+F[u] \coloneqq \text{area of the surface of revolution obtained by rotating $\Gamma_u$ about the $x$-axis},
+\]
+which is, by some calculus,
+\[
+F[u] = \int_a^b 2\pi u(x) \sqrt{1 + u'(x)^2} \, dx.
+\]
+With the set $\mathcal{A}$ of functions defined as in the previous example, we seek to find a function $u_* \in \mathcal{A}$ minimizing $F$ on $\mathcal{A}$.
+
+In this example, the Lagrangian is $L(x,z,p) = 2\pi z \sqrt{1 + p^2}$, which gives
+\[
+L_z = 2\pi \sqrt{1 + p^2}
+\]
+and
+\[
+L_p = \frac{2\pi z p}{\sqrt{1 + p^2}}
+\]
+The Euler-Lagrange equation is, in this case,
+\[
+0 = -\frac{d}{dx} L_p + L_z = -\frac{d}{dx} \left[ \frac{2\pi u(x)u'(x)}{\sqrt{1 + u'(x)^2}} + 2\pi \sqrt{1 + u'(x)^2} \right].
+\]
+Cancel the $2\pi$'s to get the ODE
+\[
+\tag{**}
+\left[ \frac{u(x)u'(x)}{\sqrt{1 + u'(x)^2}} + \sqrt{1 + u'(x)^2} \right] = 0.
+\]
+By magic, the general solution to this differential equation has the form
+\[
+u(x) = \beta \cosh\left(\frac{x - \alpha}{\beta} \right)
+\]
+for some constants $\alpha, \beta$. We won't argue why we got this solution, but we can differentiate it and check that it solves the ODE; uniqueness theorems give us what we want.
+\[
+u'(x) = \beta \sinh \left( \frac{x - \alpha}{\beta} \right) \frac{1}{\beta} = \sinh \left( \frac{x - \alpha}{\beta} \right),
+\]
+implying
+\[
+\sqrt{1 + u'(x)^2} = \cosh \left( \frac{x - \alpha}{\beta} \right).
+\]
+It is now obvious that $u$ solves (**). Therefore a minimizer $u_*$ must be of the form
+\[
+u_*(x) = \beta \cosh \left( \frac{x - \alpha}{\beta} \right).
+\]
+We may use the boundary conditions to find $\alpha, \beta$.
+
+Consider the special case $(a,A) = (0, 1)$ and $(b, B) = (1,0)$. The boundary conditions on $u_*$ give us the system
+\begin{align*}
+\beta \cosh \left( \frac{x - \alpha}{\beta} \right) &= 1 \\
+\beta \cosh\left( \frac{1 - \alpha}{\beta} \right) &= 0.
+\end{align*}
+Since $\cosh$ is strictly positive, the second equation gives us $\beta = 0$, a contradiction. We conclude that there is no $C^1$ minimizer in this special case.
+\end{enumerate}
+
+
+\end{document}
+ 
