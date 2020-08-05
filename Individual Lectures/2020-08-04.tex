@@ -1,0 +1,280 @@
+\documentclass[11pt]{article}
+\usepackage[utf8]{inputenc}
+\usepackage{amsmath, amsthm, amssymb, amsfonts, mathtools, tikz-cd, float, cancel}
+\usepackage[left=2.5cm,right=2.5cm]{geometry}
+\usepackage[shortlabels]{enumitem}
+
+\newcommand{\Int}{\text{Int}}
+\newcommand{\R}{\mathbb{R}}
+\newcommand{\Z}{\mathbb{Z}}
+\newcommand{\pd}{\partial}
+\renewcommand{\epsilon}{\varepsilon}
+\renewcommand{\hat}{\widehat}
+\renewcommand{\tilde}{\widetilde}
+
+\newtheorem{theorem}{Theorem}[section]
+\newtheorem{corollary}{Corollary}[theorem]
+\newtheorem{lemma}[theorem]{Lemma}
+\newtheorem{proposition}{Proposition}
+
+\newtheorem{definition}{Definition}
+
+\pagestyle{myheadings}
+
+
+\begin{document}
+
+\section{Euler-Lagrange in Higher Dimension (August 4)}
+
+\subsection{Euler-Lagrange in Higher Dimensions}
+
+We consider a functional
+\[
+F[u] \coloneqq \int_a^b L(x, u(x), u'(x)) \, dx,
+\]
+where $u : [a,.b] \to \R^n$. In this case,
+\[
+L : [a, b] \times \R^n \times \R^n \to \R.
+\]
+Our general space of functions will be denoted by 
+\[
+\mathcal{A} \coloneqq \{ u : [a,b] \to \R^n : u \in C^1, u(a) = A, u(b) = B \}.
+\]
+The Euler-Lagrange equation from the real-valued case generalizes to the \emph{Euler-Lagrange equations:}
+\begin{align*}
+-\frac{d}{dx} \nabla_p L(x, u_*(x), u_*'(x)) + \nabla_z L(x, u_*(x), u_*'(x)) = 0.
+\end{align*}
+(There are $n$ equations here.) The proof is a straightforward generalization of the proof given when $n = 1$.
+
+\subsection{Newton's Second Law}
+
+Let us consider an example from classical mechanics. We consider the physical situation of a point mass moving in a potential field. Denote by $V(x)$ the potential energy at a point $x$. The kinetic energy of a point of mass $m$ with velocity $v$ is $\frac{1}{2} m |v|^2$. Define the Lagrangian
+\[
+L(t,x,v) = \frac{1}{2} m |v|^2 - V(x)
+\]
+as the difference between the kinetic and potential energies. Suppose our particle is moving along a path $x = x(t)$ parametrized by time in $\R^n$. Our functional is
+\[
+F[x] \coloneqq \int_{t_1}^{t_2} \left( \frac{1}{2} m |\dot{x}(t)|^2 - V(x(t)) \right) \, dt.
+\]
+This represents the difference between the kinetic energy and the potential energy \emph{along the entire path}. We can think of it as the net change in energy from the kinetic energy to potential energy along the path.
+
+In this case, the Euler-Lagrange equations for a a minimizing path $x(t)$ are
+\[
+0 = -\frac{d}{dt} \nabla_v L(t, x(t), \dot{x}(t)) + \nabla_x L(t, x(t), \dot{x}(t)).
+\]
+One computes that 
+\begin{align*}
+\nabla_v L(t,x,v) &= mv \\
+\nabla_x L(t,x,v) &= -\nabla V(x).
+\end{align*}
+Then the Euler-Lagrange equations are
+\[
+\boxed{m \ddot{x}(t) = -\nabla V(x).}
+\]
+This is Newton's second law! Our perspective is a bit different from the Newtonian perspective, however. In our situation, the path that minimizes the exchange of energy is the same as the path that the particle will follow. (The \emph{Lagrangian} perspective, or the \emph{law of least action.})
+
+\subsection{More Examples}
+
+\begin{enumerate}
+\item
+Consider
+\[
+F[u] = \int_0^1 \left( u_1(t)^2 + \frac{u_1'(t)^2}{2} + u_2'(t)^2 \right) \, dt,
+\]
+where $u : [0, 1] \to \R^2$. The Lagrangian function is
+\[
+L(t,z,p) = z_1^2 + \frac{p_1^2}{2} + p_2^2.
+\]
+The gradients are
+\[
+\nabla_p L = \begin{pmatrix}
+p_1 \\ 2p_2
+\end{pmatrix} \qquad \text{ and } \qquad \nabla_z L = \begin{pmatrix}
+2z_1 \\ 0
+\end{pmatrix},
+\]
+so the Euler-Lagrange equation are, in this case,
+\[
+-\frac{d}{dt} \begin{pmatrix}
+u_1'(t) \\
+2u_2'(t)
+\end{pmatrix} + \begin{pmatrix}
+2u_1(t) \\ 0
+\end{pmatrix} = \begin{pmatrix}
+0 \\ 0
+\end{pmatrix}.
+\]
+Simplifying a bit gives
+\begin{align*}
+u_1'' &= 2u_1 \\
+2u_2'' &= 0,
+\end{align*}
+which is easy to solve.
+
+\item
+Let us try to derive the equations of motion for a spherical pendulum in three dimensions.
+
+\begin{figure}[H]
+\includegraphics[scale=0.85]{aug8-pendulum.jpg}
+\centering
+\caption{Figure from Professor Korman's lecture.}
+\end{figure}
+
+Consider a rod of length $\ell$ attached to the origin in $\R^3$ with a mass $m$ at the end. Suppose that it is under the $xy$-axis. Let $\theta$ be the angle from the negative $z$-axis to the rod, and let $\phi$ be the angle of rotation in the $xy$-plane. We then have
+\begin{align*}
+x &= \ell \cos \phi \sin \theta, \\
+y  &= \ell \sin \phi \sin \theta, \\
+z &= -\ell \cos \theta.
+\end{align*}
+The Lagrangian function is
+\[
+L = \frac{1}{2} \left( \dot{x}(t)^2 + \dot{y}(t)^2 + \dot{z}(t)^2 \right) - mgz(t),
+\]
+the difference between the kinetic energy of the mass, and the potential energy on the mass from the influence of gravity. By our work on Newton's second law, we know that the pendulum should take the path that minimizes the integral of this function. We can thus use the Euler-Lagrange equations to derive an expression for the path which the pendulum takes.
+
+If we plug in the spherical coordinates expressions for $x$ and $y$ into the Lagrangian, we obtain, after some omitted work,
+\[
+L \left(t, (\theta, \phi), (\dot{\theta}, \dot{\phi}) \right) = \frac{1}{2} m \ell^2 \left( \dot{\theta}^2 + \dot{\phi}^2 \sin^2 \theta \right) + m g \ell \cos \theta.
+\]
+So the "new Lagrangian" is, in more familiar notation,
+\[
+L(x,z,p) = \frac{1}{2} m \ell^2 \left( p_1^2 + p_2^2 \sin^2 z_1 \right) + mg \ell \cos z_1.
+\]
+For the gradients, we obtain
+\[
+\nabla_z L = \begin{pmatrix}
+m \ell^2 p_2^2 \sin z_1 \cos z_1 - mg \ell \sin z_1 \\ 0
+\end{pmatrix} = \begin{pmatrix}
+m \ell^2 \dot{\phi}^2 \sin \theta \cos \theta - mg \ell \sin \theta \\ 0
+\end{pmatrix}
+\]
+and
+\[
+\nabla_p L = \begin{pmatrix}
+m \ell^2 p_1 \\
+m \ell^2 p_2 \sin^2 z_1
+\end{pmatrix} = \begin{pmatrix}
+m \ell^2 \dot{\theta} \\
+m \ell^2 \dot{\phi} \sin^2 \theta
+\end{pmatrix}.
+\]
+The Euler-Lagrange equations are, after some work,
+\begin{align*}
+\ddot{\theta} - \dot{\phi}^2 \sin \theta \cos \theta + \frac{g}{\ell} \sin \theta &= 0 \\
+\dot{\phi} \sin^2 \theta &= \mathrm{const}.
+\end{align*}
+Multiply the first equation by $-\sin \theta$ to obtain
+\[
+\dot{\phi} \dot{\phi} \sin^2 \theta \cos \theta - \frac{g}{\ell} \sin^2  \theta - \ddot{\theta} \sin{\theta} = 0
+\]
+The second equation says that $\dot{\phi} \sin^2 \theta$ is some constant $A$, so we obtain the equation of motion of a three-dimensional pendulum
+\[
+\boxed{A \dot{\phi} \cos \theta - \frac{g}{\ell} \sin^2 \theta - \ddot{\theta} \sin \theta = 0.}
+\]
+
+% somewhat incomplete example, knowledge of physics is not good enough
+\item
+Let us consider the previous example, but in the simpler case where $\dot{\phi} = 0$. That is, $\phi$ is not changing with respect to time, so there is no rotation of the pendulum in the $xy$-plane. Physically, we are working with a $2$-dimensional pendulum; it is our recent example of $3$-dimensions with the pendulum's motion restricted to a plane. The equation of motion becomes, after some simplification,
+\[
+-\frac{g}{\ell} \sin \theta = \ddot{\theta}
+\]
+We will derive this equation \emph{without} using the calculus of variations; only with elementary physics.
+\begin{figure}[H]
+\includegraphics[scale=0.85]{aug8-pendulum2.jpg}
+\centering
+\caption{Figure from Professor Korman's lecture.}
+\end{figure}
+We have that
+\begin{align*}
+\text{arclength} &= \ell \theta \\
+\text{(tangential) velocity} &= \ell \dot{\theta} \\
+\text{(tangential) acceleration} &= \ell \ddot{\theta},
+\end{align*}
+so the mass times the (tangential) acceleration is $m \ell \ddot{\theta}$. Newton's second law (Newtonian view) states that force equals mass times acceleration. One may derive the original equation in consideration by remembering that the net force is equal to the mass times the acceleration.
+\end{enumerate}
+
+\subsection{Equality Constraints}
+
+We will develop first order necessary conditions for a minimizer under equality constraints in the calculus of variations problem.
+
+Define functionals
+\begin{align*}
+F[u] \coloneqq \int_a^b L^F(x, u(x), u'(x)) \, dx \\
+G[u] \coloneqq \int_a^b L^G(x, u(x), u'(x)) \, dx.
+\end{align*}
+Our problem is of the form
+\begin{align*}
+\min_{u \in \mathcal{A}} \qquad &F[u] \\
+\text{subject to } &G[u] = \mathrm{const} \\
+\mathcal{A} &= \{ u \in C^1([a, b], \R) : u(a) = A, u(b) = B \}.
+\end{align*}
+It is for this problem that we wish to derive first order necessary conditions for a minimizer. These conditions take the following form:
+\begin{theorem}
+Suppose $u_*$ is a \emph{regular point} of $G$ (i.e. $\frac{\delta F}{\delta u}(u_*) \neq 0$) which is a minimizer of $F$ subject to the equality constraint. Then there is a $\lambda \in \R$ such that
+\[
+\frac{\delta F}{\delta u}(u_*) + \lambda \frac{\delta G}{\delta u}(u_*) = 0.
+\]
+\end{theorem}
+\begin{proof}
+Homework problem!
+\end{proof}
+
+Recall that
+\[
+\frac{\delta F}{\delta u}(u_*) = -\frac{d}{dx} L_p^F + L_z^F
+\]
+and similarly for $\frac{\delta G}{\delta u}(u_*)$, so we can write the first order necessary conditions that we just described as
+\[
+-\frac{d}{dx} \left[ (L^F + \lambda L^G)_p \right] + \left( L^F + \lambda L^G \right)_z = 0,
+\]
+where it is understood at which point the partials of the Lagrangians are evaluated.
+
+\subsection{Example of Equality Constraints}
+
+Among all $C^1$ curves of length $\ell$ in the upper half plane passing through $(-a,0)$ and $(a, 0)$, find the one which together with the interval $[-a,a]$ encloses the largest area. We call problems like this \emph{isoperimetric problems.}
+
+\begin{figure}[H]
+\includegraphics[scale=0.85]{aug8-isop.jpg}
+\centering
+\caption{Figure from Professor Korman's lecture.}
+\end{figure}
+
+Our function space $\mathcal{A}$ is the set
+\[
+\mathcal{A} = \{ u \in C^1([a,b], \R) : u(-a) = 0, u(a) = 0 \}.
+\]
+The functional which we wish to maximize
+\[
+F[u] = \int_{-a}^a u(x) \, dx,
+\]
+and the equality constraint is
+\[
+G[u] = \int_{-a}^a \sqrt{1 + u'(x)} \, dx = \ell.
+\]
+Our problem is stated as
+\begin{align*}
+\text{minimize } &-F[u] \\
+\text{subject to } & G[u] = \ell, u \in \mathcal{A}.
+\end{align*}
+The Lagrangians are
+\begin{align*}
+L^{-F}(x,z,p) &= -z \\
+L^G(x,z,p) = \sqrt{1 + p^2}.
+\end{align*}
+The relevant partial derivatives are
+\begin{alignat*}{2}
+L^{-F}_z &= -1 \qquad\qquad L^{-F}_p &&= 0, \\
+L^G_z &= 0 \qquad\qquad L^G_p &&= \frac{p}{\sqrt{1 + p^2}}.
+\end{alignat*}
+The first-order necessary conditions for a minimizer, in this case, state that
+\[
+-\frac{d}{dx} \left( 0 + \lambda \frac{u'(x)}{\sqrt{1 + u'(x)^2}} \right) = -1.
+\]
+We obtain the equation
+\[
+\lambda^2 \frac{u'(x)^2}{1 + u'(x)^2} = (c_1 - x)^2
+\]
+for some constant $c_1$. We will solve this next class.
+
+\end{document}
+ 
