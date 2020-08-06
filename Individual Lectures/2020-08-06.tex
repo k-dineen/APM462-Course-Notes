@@ -1,0 +1,75 @@
+\documentclass[11pt]{article}
+\usepackage[utf8]{inputenc}
+\usepackage{amsmath, amsthm, amssymb, amsfonts, mathtools, tikz-cd, float, cancel}
+\usepackage[left=2.5cm,right=2.5cm]{geometry}
+\usepackage[shortlabels]{enumitem}
+
+\newcommand{\Int}{\text{Int}}
+\newcommand{\R}{\mathbb{R}}
+\newcommand{\Z}{\mathbb{Z}}
+\newcommand{\pd}{\partial}
+\renewcommand{\epsilon}{\varepsilon}
+\renewcommand{\hat}{\widehat}
+\renewcommand{\tilde}{\widetilde}
+
+\newtheorem{theorem}{Theorem}[section]
+\newtheorem{corollary}{Corollary}[theorem]
+\newtheorem{lemma}[theorem]{Lemma}
+\newtheorem{proposition}{Proposition}
+
+\newtheorem{definition}{Definition}
+
+\pagestyle{myheadings}
+
+
+\begin{document}
+
+\section{An Example (August 6)}
+
+\subsection{Recap}
+
+Recall from last lecture the "isoperimetric problem"
+\begin{align*}
+\text{minimize } F[u] &\coloneqq \int_{-a}^a u(x) \, dx \\
+\text{subject to } G[u] &\coloneqq \int_{-a}^a \sqrt{1 + u'(x)^2} \, dx = \ell \\
+u \in \mathcal{A} &\coloneqq \{ u : [-a, a] \to \R : u \in C^1([a,b]), u(-a) = u(a) = 0 \}.
+\end{align*}
+We derived the following Euler-Lagrange equation for a minimizer:
+\[
+\tag{*}
+\lambda^2 \frac{u'(x)^2}{1 + u'(x)^2} = (c_1 - x)^2.
+\]
+We claim that any solution to (*) must satisfy
+\[
+(x - c_1)^2 + (u(x) - c_2)^2 = \lambda^2,
+\]
+which follows from implicit differentiation. Therefore the solution is on a circle of the form $(x - c_1)^2 + (y - c_2)^2 = \lambda^2$. Compare with the isoperimetric inequality, which states that of all the simple closed curves of fixed length, the circle of that circumference encloses the most area.
+
+\subsection{Surface of Revolution Example}
+
+Among all the curves $y = u(x)$ joining $(0, b)$ and $(a, 0)$ which enclose a region of fixed area $S$, find the one which minimizes the surfacea rea of the surface of revolution about the $x$-axis. Our functional is
+\[
+F[u] \coloneqq \int_0^a  u(x) \sqrt{1 + u'(x)^2} \, dx,
+\]
+which we wish to minimize under the constraint
+\[
+G[u] \coloneqq \int_0^a u(x) \, dx = S,
+\]
+where $u \in \mathcal{A} = \{ u \in C^1([0, a]) : u(0) = b, u(a) = 0 \}$. (We cancel the $2\pi$ from the definition of $F$ for simplicity.) The Lagrangians are $L^F(x,z,p) = z\sqrt{1 + p^2}$ and $L^G(x,z,p) = z$. The Euler-Lagrange equation is
+\[
+-\frac{d}{dx} (L^F_p + \lambda L^G_p) + (L^F_z + \lambda L^G_z) \equiv 0,
+\]
+with the linear combinations of the Lagrangians evaluated at $(x, u(x), u'(x))$. We obtain
+\[
+-\frac{d}{dx} \left( \frac{u(x)u'(x)}{\sqrt{1 + u'(x)^2}} + \lambda 0 \right) + \sqrt{1 + u'(x)^2} + \lambda = 0.
+\]
+A computation shows that a function of the form $u(x) = \alpha x + \beta$ solves these Euler-Lagrange equations. Plugging in the boundary conditions and solving for $\alpha, \beta$ in terms of $a, b$ gives
+\[
+\frac{x}{a} + \frac{y}{b} = 1.
+\]
+
+\textbf{These notes are somewhat incomplete.}
+
+
+\end{document}
+ 
