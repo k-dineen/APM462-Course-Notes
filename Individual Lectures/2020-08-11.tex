@@ -1,0 +1,256 @@
+\documentclass[11pt]{article}
+\usepackage[utf8]{inputenc}
+\usepackage{amsmath, amsthm, amssymb, amsfonts, mathtools, tikz-cd, float, cancel}
+\usepackage[left=2.5cm,right=2.5cm]{geometry}
+\usepackage[shortlabels]{enumitem}
+
+\newcommand{\Int}{\text{Int}}
+\newcommand{\R}{\mathbb{R}}
+\newcommand{\Z}{\mathbb{Z}}
+\newcommand{\pd}{\partial}
+\renewcommand{\epsilon}{\varepsilon}
+\renewcommand{\hat}{\widehat}
+\renewcommand{\tilde}{\widetilde}
+
+\newtheorem{theorem}{Theorem}[section]
+\newtheorem{corollary}{Corollary}[theorem]
+\newtheorem{lemma}[theorem]{Lemma}
+\newtheorem{proposition}{Proposition}
+
+\newtheorem{definition}{Definition}
+
+\pagestyle{myheadings}
+
+
+\begin{document}
+
+\section{Holonomic Equality Constraints (August 11)}
+
+Previously we discussed isoperimetric constraints. Today, we will discuss a different kind of equality constraints known as \emph{holonomic constraints}.
+
+\subsection{Holonomic Constraints}
+
+We consider a functional $F$ depending on three functions:
+\[
+F[\underbrace{x(\cdot), y(\cdot), z(\cdot)}_{u(\cdot)}] = \int_a^b L(t, \underbrace{x(t), y(t), z(t)}_{u(t)}, \underbrace{x'(t), y'(t), z'(t)}_{u'(t)}) \, dx,
+\]
+subject to a $C^1$constraint $H(x(t),y(t),z(t)) = 0$ for $t \in [a, b]$ with $\nabla H \neq 0$ on a space 
+\[
+\mathcal{A} = \{ u : [a, b] \to \R^3 : u \text{ is } C^1, u(a) = A, u(b) = B \}.
+\] 
+(So the function "curves" lie on a surface in $\R^3$.) We would like to minimize $F[u(\cdot)]$ where $H(u(t)) = 0$ and $u \in \mathcal{A}$. The Euler-Lagrange equations in this case are
+\[
+\begin{pmatrix}
+\frac{\delta F}{\delta x}(u)(t) \\
+\frac{\delta F}{\delta y}(u)(t) \\
+\frac{\delta F}{\delta z}(u)(t)
+\end{pmatrix} + \lambda(t) \begin{pmatrix}
+H_x(u(t)) \\
+H_y(u(t)) \\
+H_z(u(t))
+\end{pmatrix} = \begin{pmatrix}
+0 \\ 0 \\ 0
+\end{pmatrix}.
+\]
+We may succinctly write this as
+\[
+\frac{\delta F}{\delta u} + \lambda (t) \nabla H = 0,
+\]
+which parallels nicely with the finite-dimensional case, if we consider variational problems to be infinite-dimensional problems.
+
+\subsection{Examples}
+
+\begin{enumerate}
+\item
+(Motion of a spherical pendulum) Consider again the example of the spherical pendulum. The Lagrangian function is
+\[
+L(t, x,y,z, \dot{x}, \dot{y}, \dot{z}) = \frac{1}{2} m (\dot{x}^2 + \dot{y}^2 + \dot{z}^2) - mgz.
+\]
+(Kinetic energy minus potential energy.) Thus the functional we wish to minimize is
+\[
+F[x(\cdot), y(\cdot), z(\cdot)] = \int_a^b L(t, x(t), y(t), \dot{x}(t), \dot{y}(t), \dot{z}(t)) \, dt,
+\]
+subject to the constraint that $(x(t), y(t), z(t))$ is on the sphere of radius $\ell$, i.e.
+\[
+H(x(t), y(t), z(t)) = \frac{1}{2}(x(t)^2 + y(t)^2 + z(t)^2) - \frac{1}{2} \ell^2 = 0.
+\]
+This is a holonomic constraints problem. Last week we solved this by parametrizing the sphere with spherical coordinates, freeing ourselves of the constraint. Now, we can use the first order necessary constraints to solve this. 
+
+Since the pendulum takes the path which minimizes the net difference in kinetic and potential energy, solutions to this problem will be the paths the pendulum takes depending on the initial conditions. 
+
+To match the notation we had before, we have
+\begin{align*}
+L(t, z_1,z_2,z_3, p_1,p_2,p_3) &= \frac{1}{2} (p_1^2 + p_2^2 + p_3^2) - mgz_3 \\
+H(x,y,z) &= \frac{1}{2} (x^2+y^2+z^2) - \frac{1}{2} \ell^2.
+\end{align*}
+The partials we want are are
+\begin{align*}
+L_{p_1} &= mp_1 \\
+L_{p_2} &= mp_2 \\
+L_{p_3} &= mp_3 \\
+L_{z_1} &= 0 \\
+L_{z_2} &= 0 \\
+L_{z_3} &= -mg \\
+H_x &= x \\
+H_y &= y \\
+H_z &= z.
+\end{align*}
+We have
+\begin{align*}
+\frac{\delta F}{\delta x} = -m \ddot{x}(t) \\
+\frac{\delta F}{\delta y} = -m \ddot{y}(t) \\
+\frac{\delta F}{\delta y} = -m \ddot{z}(t) - mg.
+\end{align*}
+The Euler-Lagrange equations are
+\[
+\begin{pmatrix}
+-m \ddot{x}(t) \\
+-m \ddot{y}(t) \\
+-m \ddot{z}(t) - mg
+\end{pmatrix} + \lambda (t) \begin{pmatrix}
+x(t) \\ y(t) \\ z(t)
+\end{pmatrix} \equiv \begin{pmatrix}
+0 \\ 0 \\ 0
+\end{pmatrix}
+\]
+subject to the constraint $x(t)^2 + y(t)^2 + z(t)^2 = \ell^2$. There are four equations are four unknowns, so, in principle, the system may be solved.
+
+We will solve this in the special case that $y \equiv 0$, $\ell = 1$, and $m = 1$. We lie in the $xy$-plane. We obtain
+\begin{align*}
+\ddot{x}(t) &= \lambda(t)x(t) \\
+\ddot{z}(t) &= \lambda(t)z(t) - g \\
+x(t)^2 + z(t)^2 &= 1.
+\end{align*}
+Parametrize by $x(t) = \sin \theta(t)$ and $z(t) = -\cos \theta(t)$, so that
+\begin{align*}
+\dot{x} &= \dot{\theta} \cos \theta \\
+\dot{z} &= \dot{\theta} \sin \theta
+\end{align*}
+and
+\begin{align*}
+\ddot{x} &= \ddot{\theta} \cos \theta - \dot{\theta}^2 \sin \theta, \\
+\ddot{z} &= \ddot{\theta} \sin \theta + \dot{\theta}^2 \cos \theta.
+\end{align*}
+Plugging these into the Euler-Lagrange equations gives
+\begin{align*}
+\ddot{\theta} \cos \theta - \dot{\theta}^2 \sin \theta &= \lambda \sin \theta \\
+\ddot{\theta} \sin \theta + \dot{\theta}^2 \cos\theta &= -\lambda \cos \theta - g.
+\end{align*}
+Multiplying the second equation by $\sin \theta$ gives, after a bit of simplifying,
+\[
+\ddot{\theta} \sin^2 \theta + \dot{\theta}^2 \sin \theta \cos \theta = -\ddot{\theta} \cos^2 \theta + \dot{\theta}^2 \sin \theta \cos \theta - g \sin \theta.
+\]
+This simplifies to
+\[
+\ddot{\theta} = -g \sin \theta,
+\]
+the equation of motion of a planar pendulum.
+
+\item
+(Geodesics on a cylinder) The cylinder on which we would like to minimize the length of a curve is parametrized by $H(x,y,z) = x^2 + y^2 - r^2 = 0$. The functional we will be minimizing gives the arc length of a curve:
+\[
+F[x(\cdot), y(\cdot), z(\cdot)] = \int_a^b \sqrt{x'(t)^2 + y'(t)^2 + z'(t)^2} \, dt.
+\]
+We seek solutions (\emph{geodesics}) to the Euler-Lagrange equations.
+
+In our old notation, the Lagrangian function is
+\[
+L(t, z_1,z_2,z_3, p_1,p_2,p_3) = \sqrt{p_1^2 + p_2^2 + p_3^2}.
+\]
+We have
+\begin{align*}
+\frac{\delta F}{\delta x} &= -\frac{d}{dt} \frac{p_1}{\sqrt{p_1^2 + p_2^2 + p_3^2}} = -\frac{d}{dt} \frac{\dot{x}(t)}{\sqrt{\dot{x}(t)^2 + \dot{y}(t)^2 + \dot{z}(t)^2}}, \\
+\frac{\delta F}{\delta y} &= -\frac{d}{dt} \frac{p_2}{\sqrt{p_1^2 + p_2^2 + p_3^2}} = -\frac{d}{dt} \frac{\dot{y}(t)}{\sqrt{\dot{x}(t)^2 + \dot{y}(t)^2 + \dot{z}(t)^2}}, \\ 
+\frac{\delta F}{\delta z} &= -\frac{d}{dt} \frac{p_3}{\sqrt{p_1^2 + p_2^2 + p_3^2}} =  -\frac{d}{dt} \frac{\dot{z}(t)}{\sqrt{\dot{x}(t)^2 + \dot{y}(t)^2 + \dot{z}(t)^2}}.
+\end{align*}
+Note that $x,y,z$ are only $C^1$, so we cannot necessarily expand the derivatives on the right hand side any more. It is only guaranteed that the functions $\dot{x}(t) / \sqrt{\dot{x}(t)^2 + \dot{y}(t)^2 + \dot{z}(t)^2}$, etc. on the right are differentiable, not necessarily that the functions $\dot{x}(t), \dot{y}(t), \dot{z}(t)$ they are composed of are differentiable.
+
+The Euler-Lagrange equations are
+\[
+\begin{pmatrix}
+-\frac{d}{dt} \frac{\dot{x}(t)}{\sqrt{\dot{x}(t)^2 + \dot{y}(t)^2 + \dot{z}(t)^2}} \\
+-\frac{d}{dt} \frac{\dot{y}(t)}{\sqrt{\dot{x}(t)^2 + \dot{y}(t)^2 + \dot{z}(t)^2}} \\
+-\frac{d}{dt} \frac{\dot{z}(t)}{\sqrt{\dot{x}(t)^2 + \dot{y}(t)^2 + \dot{z}(t)^2}}
+\end{pmatrix} + \lambda(t) \begin{pmatrix}
+2x(t) \\ 2y(t) \\ 0
+\end{pmatrix} \equiv \begin{pmatrix}
+0 \\ 0 \\ 0
+\end{pmatrix}.
+\]
+We will not solve these, but we will exhibit some solutions.
+
+\begin{enumerate}[(i)]
+\item
+We claim that spirals are geodesics on the cylinder. A spiral is parametrized by
+\begin{align*}
+x(t) &= r \cos t \\
+y(t) &= r \sin t \\
+z(t) &= \alpha t.
+\end{align*}
+Note that $x, y, z$ are all $C^2$ functions, so we will be able to expand the derivatives present in the Euler-Lagrange equations. The derivatives of these functions are
+\begin{align*}
+\dot{x}(t) &= -r \sin t \\
+\dot{y}(t) &= r \cos t \\
+\dot{z}(t) &= \alpha,
+\end{align*}
+and so we see that
+\[
+\sqrt{\dot{x}(t)^2 + \dot{y}(t)^2 + \dot{z}(t)^2} = \sqrt{r^2 + \alpha^2},
+\]
+which is constant. After a bit of simplifying, we may conclude that
+\[
+\lambda(t) = -\frac{1}{2\sqrt{r^2 + \alpha^2}}.
+\]
+The rest of the computation is left as an exercise, for the author was busy during this part of the lecture.
+
+\item
+We claim, also, that lines are geodesics. A line is parametrized by
+\begin{align*}
+x(t) &= \alpha \\
+y(t) &= \beta \\
+z(t) &= \gamma t,
+\end{align*}
+where $\alpha^2 + \beta^2 = r$ (so that the line is actually on the cylinder). The derivatives are
+\begin{align*}
+\dot{x}(t) &= 0 \\
+\dot{y}(t) &= 0 \\
+\dot{z}(t) &= \gamma.
+\end{align*}
+One computes that $\lambda(t) \equiv 0.$
+\end{enumerate}
+Using similar methods, one can see that great circles are geodesics on spheres.
+
+\item
+(Characterizing geodesics on the cylinder) Assume without loss of generality that our curves $u(t) = (x(t), y(t), z(t))$ have unit speed, so that $\sqrt{\dot{x}(t)^2 + \dot{y}(t)^2 + \dot{z}(t)^2} \equiv 1$. Then the Euler-Lagrange equations are
+\[
+\begin{pmatrix}
+\ddot{x}(t) \\ \ddot{y}(t) \\ \ddot{z}(t)
+\end{pmatrix} = \lambda(t) \begin{pmatrix}
+2x(t) \\ 2y(t) \\ 0
+\end{pmatrix}.
+\]
+Immediately we see that $z(t) = \alpha t + \beta$ is an affine function. Since $x^2 + y^2 = r^2$ (suppressing dependency on $t$), differentiation gives $x\dot{x} + y\dot{y} = 0$, and differentiating again gives $\dot{x}^2 + x\ddot{x} + \dot{y}^2 + y\ddot{y} = 0$. Rearranging and applying the Euler-Lagrange equations gives $\dot{x}^2 + \dot{y}^2 = -(x\ddot{x} + y\ddot{y}) = -2\lambda(x^2 + y^2) = -2\lambda r^2$. The unit-speed condition gives that $1 = \dot{x}^2 + \dot{y}^2 + \alpha^2$. After some work, one sees that
+\[
+\lambda(t) = \frac{\alpha^2 - 1}{2r^2}.
+\]
+Let $A = -2\lambda(t)$. The Euler-Lagrange equations become
+\begin{align*}
+\ddot{x} &= -A x \\
+\ddot{y} &= -A y.
+\end{align*}
+We have that
+\[
+x(t) = \begin{cases}
+a \cos \sqrt{A}t + b \sin \sqrt{A} t & A \geq 0 \\
+a e^{i \sqrt{|A|} t} + b e^{-i \sqrt{|A|}}t & A < 0
+\end{cases}
+\]
+and somewhat similarly for $y$. (The author of these notes cannot stop being interrupted by family during lectures.)
+\end{enumerate}
+
+\subsection{Euler-Lagrange For Holonomic Constraints, Special Case}
+
+Incomplete.
+
+\end{document}
+ 
