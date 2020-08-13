@@ -1,0 +1,94 @@
+\documentclass[11pt]{article}
+\usepackage[utf8]{inputenc}
+\usepackage{amsmath, amsthm, amssymb, amsfonts, mathtools, tikz-cd, float, cancel}
+\usepackage[left=2.5cm,right=2.5cm]{geometry}
+\usepackage[shortlabels]{enumitem}
+
+\newcommand{\Int}{\text{Int}}
+\newcommand{\R}{\mathbb{R}}
+\newcommand{\Z}{\mathbb{Z}}
+\newcommand{\pd}{\partial}
+\renewcommand{\epsilon}{\varepsilon}
+\renewcommand{\hat}{\widehat}
+\renewcommand{\tilde}{\widetilde}
+
+\newtheorem{theorem}{Theorem}[section]
+\newtheorem{corollary}{Corollary}[theorem]
+\newtheorem{lemma}[theorem]{Lemma}
+\newtheorem{proposition}{Proposition}
+
+\newtheorem{definition}{Definition}
+
+\pagestyle{myheadings}
+
+
+\begin{document}
+
+\section{Sufficient Conditions and Convexity (August 13)}
+
+\subsection{Sufficient Convexity Condition on The Lagrangian, No Constraints}
+
+Recall that if $u_* \in \mathcal{A} = \{ u \in C^1([a, b]) : u(a) = A, u(b) = B \}$ is a minimizer of the functional
+\[
+F[u(\cdot)] \coloneqq \int_a^b L(x, u(x), u'(x)) \, dx,
+\]
+Then it satisfies the "primitive" Euler-Lagrange equation
+\[
+\tag{*}
+\int_a^b \Bigg[ L_z(x, u_*(x), u_*'(x))v(x) +  L_p(x, u_*(x), u_*'(x))v'(x) \Bigg] \, dx = 0
+\]
+for all test functions $v$ on $[a, b]$.
+
+\begin{lemma}
+Assume the conditions above. Suppose $L = L(x,z,p)$ is a $C^1$ function, and that for each $x \in [a, b]$, $L(x, \cdot, \cdot)$ is convex. If $u_*$ satisfies (*) above, then $F[u_*(\cdot)] \leq F[u_*(\cdot) + v(\cdot)]$ for all test functions $v$ on $[a, b]$.
+\end{lemma}
+
+The lemma states, roughly, that if $u_*$ is a minimizer, then it must be a global minimizer. We will look at an example of the lemma and then prove it.
+
+(See the "model example" in the professor's notes.) Consider $L(x,z,p) = \frac{1}{2}(z^2 + p^2)$. This satisfies the hypotheses of the lemma. Suppose $u_*$ is a minimizer (of the functional defined by integrating $L(x, u(x), u'(x))$). Then $u_*$ satisfies (*). The lemma then states that $F[u_*(\cdot)] \leq F[u_*(\cdot) + v(\cdot)]$ for all test functions $v$ on $[a, b]$.  But every function $u \in \mathcal{A}$ is of the form $u_* + v$ for some test function $v$ on $[a, b]$, since $u - u_*$ is a test function on $[a, b]$. Thus $u_*$ is a global minimizer.
+
+We now prove the lemma. We can think of the lemma as generalizing this model example.
+
+\begin{proof}
+Recall the $C^1$ criterion for convexity of a function $f : \R^n \to \R$: $f$ is convex if and only if $f(a + b) \geq f(a) + \nabla f(a) \cdot b$ for all $a,b \in \R^n$. We will apply this criterion to the convex function $L(x, \cdot, \cdot) : \R \times \R \to \R$. Directly applying the criterion gives
+\[
+L(x, z + \tilde{z}, p + \tilde{p}) \geq L(x,z,p) + \underbrace{\nabla_{(z,p)}L(z,z,p) \begin{pmatrix}
+\tilde{z} \\ \tilde{p}
+\end{pmatrix}}_{=L_z(x,z,p)\tilde{z} + L_p(x,z,p)\tilde{p}}.
+\]
+Then
+\begin{align*}
+F[u_*(\cdot) + v(\cdot)] &= \int_a^b L(x, u_*(x) + v(x), u_*'(x) + v'(x)) \, dx \\
+&\geq \int_a^b L(x, u_*(x), u_*'(x)) \, dx +  \underbrace{\int_a^b \Bigg[ L_z(\cdots)v(x) + L_p(\cdots)v'(x) \Bigg] \, dx}_{=0} \\
+&= \int_a^b L(x, u_*(x), u_*'(x)) \, dx \\
+&= L[u_*(\cdot)].
+\end{align*}
+\end{proof}
+
+\subsection{Convex Domains}
+
+Recall that we were originally looking at convex functions $f : \Omega \to \R$, where $f$ is $C^1$ and convex and $\Omega \subseteq \R^n$ is convex. We had a theorem:
+\begin{theorem}
+Assume the above conditions. $x_*$ is a minimizer of $f$ on $\Omega$ if and only if $\nabla f(x_*)(x - x_*) \geq 0$ for all $x \in \Omega$.
+\end{theorem}
+To this theorem there is a variational analogue. (Are we assuming the conditions of the previous subsection? This is unclear.)
+\begin{theorem}
+Consider a functional
+\[
+F[u(\cdot)] \coloneqq \int_a^b L(x, u(x), u'(x)) \, dx.
+\]
+Let $\mathcal{A} = \{ u \in C^1([a, b]) : u(a) = A, u(b) = B \}$. Let $\Omega$ be a convex subset of $\mathcal{A}$, and suppose that $u_*$ is a minimizer of $F$ on $\Omega$. Then $F[u_*(\cdot) + sv(\cdot)] \geq F[u_*(\cdot)]$ for all $s$ and all test functions $v$ on $[a, b]$, and
+\[
+\int_a^b \frac{\delta F}{\delta u}(u_*)(x)(u(x) - u_*(x))\, dx \int_a^b \frac{\delta F}{\delta u}(u_*)(x)v(x)\,dx = \left. \frac{d}{ds} \right|_{s=0} F[u_*(\cdot) + sv(\cdot)] \geq 0
+\]
+for all $u \in \Omega$. (See how the above condition parallels to the finite-dimensional case.)
+\end{theorem}
+
+We will not prove this, but we will look at an example. Suppose
+\[
+F[u(\cdot)] = \int_0^1 \frac{1}{2} \left( u'(t)^2 + u(t) \right) \, dt,
+\]
+where $\mathcal{A}$ is the set of $C^1$ functions on $[0, 1]$ that are zero at the endpoints, and $\Omega = \{ u \in \mathcal{A} : u(t) \geq \sin^2(\pi t) \}$. One can check that $\Omega$ is convex. The Lagrangian function is $L(x,z,p) = \frac{1}{2}(p^2 + z)$. This is a convex function of $(z,p)$, so it satisfies the conditions of the first lemma. Then if $u_*$ minimizes $F$ on $\Omega$, let $f(s) = F[(1 - s)u_*(\cdot) + su(\cdot)]$. We are asked to show that $f'(0) \geq 0$. (Author could not write this part.)
+
+\end{document}
+  
